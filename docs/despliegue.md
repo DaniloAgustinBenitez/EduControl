@@ -5,7 +5,7 @@ Tareas 0.6 y 7.1. Railway detecta Laravel automáticamente, así que no hace fal
 ## 1. Crear el proyecto
 
 1. Entrá a [railway.com](https://railway.com) con tu cuenta de GitHub.
-2. **New Project → Deploy from GitHub repo** y elegí `DaniloAgustinBenitez/EducacionDos`, rama `main`. Como el repo es privado, Railway te va a pedir permiso para leerlo.
+2. **New Project → Deploy from GitHub repo** y elegí `DaniloAgustinBenitez/EduControl`, rama `main`. Como el repo es privado, Railway te va a pedir permiso para leerlo.
 3. En el mismo proyecto: **New → Database → MySQL**.
 
 ## 2. Variables de entorno
@@ -14,7 +14,7 @@ En el servicio de la app, pestaña **Variables**:
 
 | Variable | Valor |
 |---|---|
-| `APP_NAME` | `EducacionDos` |
+| `APP_NAME` | `EduControl` |
 | `APP_ENV` | `production` |
 | `APP_DEBUG` | `false` |
 | `APP_KEY` | La salida de `php artisan key:generate --show` (generala en tu máquina) |

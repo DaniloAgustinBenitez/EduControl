@@ -1,7 +1,7 @@
-// DER de EducacionDos — pegar en https://dbdiagram.io/d para verlo (tarea 1.4)
+// DER de EduControl — pegar en https://dbdiagram.io/d para verlo (tarea 1.4)
 // Refleja exactamente las migraciones de database/migrations.
 
-Project EducacionDos {
+Project EduControl {
   database_type: 'MySQL'
 }
 
@@ -67,6 +67,7 @@ Table users {
 Table profesores {
   id bigint [pk, increment]
   user_id bigint [unique, ref: - users.id]
+  legajo varchar(20) [unique, not null, note: 'RF-02']
   dni varchar(15) [unique, not null]
   nombre varchar(60) [not null]
   apellido varchar(60) [not null]
@@ -97,7 +98,10 @@ Table alumnos {
   dni varchar(15) [unique, not null]
   nombre varchar(60) [not null]
   apellido varchar(60) [not null]
-  fecha_nacimiento date
+  fecha_nacimiento date [not null]
+  telefono varchar(30) [not null, note: 'RF-01: datos de contacto']
+  email varchar(255)
+  direccion varchar(160)
   curso_id bigint [ref: > cursos.id, note: 'RN-01: un único curso por alumno']
 }
 

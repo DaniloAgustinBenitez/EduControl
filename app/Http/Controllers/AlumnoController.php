@@ -78,10 +78,15 @@ class AlumnoController extends Controller
             'dni' => ['required', 'string', 'max:15', Rule::unique('alumnos')->ignore($alumno)],
             'nombre' => ['required', 'string', 'max:60'],
             'apellido' => ['required', 'string', 'max:60'],
-            'fecha_nacimiento' => ['nullable', 'date', 'before:today'],
+            // RF-01: fecha de nacimiento y datos de contacto son obligatorios.
+            'fecha_nacimiento' => ['required', 'date', 'before:today'],
+            'telefono' => ['required', 'string', 'max:30'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'direccion' => ['nullable', 'string', 'max:160'],
         ], [
             'legajo.unique' => 'Ya existe un alumno con ese legajo.',
             'dni.unique' => 'Ya existe un alumno con ese DNI.',
+            'telefono.required' => 'El teléfono de contacto es obligatorio.',
         ]);
     }
 }

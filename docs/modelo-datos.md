@@ -13,8 +13,8 @@ El DER completo está en [der.dbml](der.dbml). Para verlo gráficamente, pegá e
 | Recorrido | nombre, zonas | RF-24 |
 | Horario | día, hora de inicio, hora de fin (de un curso o de un deporte) | RN-04, RN-05 |
 | Ciclo lectivo | año, activo | RF-08 |
-| Alumno | legajo y DNI únicos, nombre, apellido, fecha de nacimiento, curso | RF-01, RF-07 |
-| Profesor | DNI, nombre, apellido, teléfono, cuenta de usuario | RF-02 |
+| Alumno | legajo y DNI únicos, nombre, apellido, fecha de nacimiento, teléfono, correo, domicilio, curso | RF-01, RF-07 |
+| Profesor | legajo y DNI únicos, nombre, apellido, teléfono, cuenta de usuario | RF-02 |
 | Tutor | DNI, nombre, apellido, teléfono, cuenta, alumnos a cargo | RF-03 |
 | Administrativo | DNI, nombre, apellido, cuenta de usuario | RF-04 |
 | Usuario | nombre, correo, contraseña (hash), rol | RF-04, RNF-02 |

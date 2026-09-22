@@ -7,7 +7,7 @@
         <div class="col-md-6"><x-campo nombre="dni" etiqueta="DNI" :valor="$alumno->dni" requerido maxlength="15" inputmode="numeric" /></div>
         <div class="col-md-6"><x-campo nombre="nombre" etiqueta="Nombre" :valor="$alumno->nombre" requerido maxlength="60" /></div>
         <div class="col-md-6"><x-campo nombre="apellido" etiqueta="Apellido" :valor="$alumno->apellido" requerido maxlength="60" /></div>
-        <div class="col-md-6"><x-campo nombre="fecha_nacimiento" etiqueta="Fecha de nacimiento" tipo="date" :valor="$alumno->fecha_nacimiento?->format('Y-m-d')" /></div>
+        <div class="col-md-6"><x-campo nombre="fecha_nacimiento" etiqueta="Fecha de nacimiento" tipo="date" :valor="$alumno->fecha_nacimiento?->format('Y-m-d')" requerido /></div>
         <div class="col-md-6">
             @if ($alumno->exists)
                 <label class="form-label">Curso</label>
@@ -23,6 +23,14 @@
                 </select>
             @endif
         </div>
+    </div>
+
+    {{-- RF-01: datos de contacto --}}
+    <h2 class="h6 mt-2">Datos de contacto</h2>
+    <div class="row">
+        <div class="col-md-4"><x-campo nombre="telefono" etiqueta="Teléfono" :valor="$alumno->telefono" requerido maxlength="30" inputmode="tel" /></div>
+        <div class="col-md-4"><x-campo nombre="email" etiqueta="Correo electrónico" tipo="email" :valor="$alumno->email" maxlength="255" /></div>
+        <div class="col-md-4"><x-campo nombre="direccion" etiqueta="Domicilio" :valor="$alumno->direccion" maxlength="160" /></div>
     </div>
 </x-formulario>
 @endsection

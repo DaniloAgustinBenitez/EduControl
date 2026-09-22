@@ -1,8 +1,8 @@
-# EducacionDos
+# EduControl
 
 Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables.
 
-Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**.
+Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**, con menú lateral, modo claro/oscuro y páginas de error propias. Los estilos del sistema están en `public/css/educontrol.css`.
 
 - **Producción:** _pendiente — ver [docs/despliegue.md](docs/despliegue.md)_
 - **Tablero del proyecto:** https://github.com/users/DaniloAgustinBenitez/projects/2
@@ -22,10 +22,10 @@ Todos con contraseña `password` (se crean con `php artisan db:seed`):
 
 | Rol | Correo |
 |---|---|
-| Administrador | `admin@educacion.test` |
-| Administrativo | `administrativo@educacion.test` |
-| Docente | `docente@educacion.test` |
-| Tutor | `tutor@educacion.test` (padre de Sofía y Tomás Pérez) |
+| Administrador | `admin@educontrol.test` |
+| Administrativo | `administrativo@educontrol.test` |
+| Docente | `docente@educontrol.test` |
+| Tutor | `tutor@educontrol.test` (padre de Sofía y Tomás Pérez) |
 
 ## Instalación local (Windows + Laragon)
 
@@ -35,8 +35,8 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 2. En `C:\laragon\bin\php\php-8.3.*\php.ini` verificá que esté activa `extension=zip` (la usa la exportación a Excel).
 3. Cloná e instalá:
    ```bash
-   git clone https://github.com/DaniloAgustinBenitez/EducacionDos.git
-   cd EducacionDos
+   git clone https://github.com/DaniloAgustinBenitez/EduControl.git
+   cd EduControl
    composer install
    copy .env.example .env
    php artisan key:generate
@@ -66,12 +66,14 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 
 ## Documentación
 
+- [Matriz de trazabilidad: qué requerimiento cumple cada archivo](docs/trazabilidad.md)
 - [Modelo de datos y DER](docs/modelo-datos.md) — el DER en formato dbdiagram.io está en [docs/der.dbml](docs/der.dbml)
 - [Reglas de negocio e interfaz del servicio de inscripciones](docs/interfaz-inscripciones.md)
 - [Despliegue en Railway](docs/despliegue.md)
 - [Copias de seguridad](docs/respaldos.md)
 - [Pruebas por rol y de diseño responsivo](docs/pruebas.md)
 - [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
+- [Correcciones a aplicar en el Plan de Trabajo](docs/correcciones-plan.md)
 
 ## Estructura principal
 

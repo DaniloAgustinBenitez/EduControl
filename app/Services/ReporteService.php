@@ -9,7 +9,6 @@ use App\Models\Deporte;
 use App\Models\InscripcionDeporte;
 use App\Models\InscripcionTransporte;
 use App\Models\Materia;
-use App\Models\Nivel;
 use App\Models\Profesor;
 use App\Models\Recorrido;
 use Illuminate\Support\Collection;
@@ -41,7 +40,9 @@ class ReporteService
         return match ($tipo) {
             'alumno', 'curso' => ['Curso', Curso::with('nivel')->orderBy('nivel_id')->orderBy('nombre')->get()->mapWithKeys(fn ($c) => [$c->id => $c->nombreCompleto()])],
             'docente' => ['Docente', Profesor::orderBy('apellido')->get()->mapWithKeys(fn ($p) => [$p->id => $p->nombreCompleto()])],
-            'materia' => ['Nivel', Nivel::orderBy('nombre')->pluck('nombre', 'id')],
+            'materia' => ['Materia (para ver la nómina de alumnos)', Materia::with('curso.nivel')->get()
+                ->sortBy(fn ($m) => [$m->curso->nivel_id, $m->curso->nombre, $m->nombre])
+                ->mapWithKeys(fn ($m) => [$m->id => $m->nombre.' — '.$m->curso->nombreCompleto()])],
             'deporte' => ['Deporte', Deporte::orderBy('nombre')->pluck('nombre', 'id')],
             'recorrido' => ['Recorrido', Recorrido::orderBy('nombre')->pluck('nombre', 'id')],
         };
@@ -54,12 +55,14 @@ class ReporteService
             $a->legajo,
             $a->nombreCompleto(),
             $a->dni,
+            trim($a->telefono.($a->email ? ' · '.$a->email : '')) ?: '—',
             $a->curso?->nombreCompleto() ?? '—',
+            $a->curso?->materias->pluck('nombre')->join(', ') ?: '—',
             ...$this->servicios($a),
         ]);
 
         return $this->armar("Reporte por alumno — ciclo {$ciclo->anio}",
-            ['Legajo', 'Alumno', 'DNI', 'Curso', 'Cursado', 'Comedor', 'Transporte', 'Deportes'], $filas);
+            ['Legajo', 'Alumno', 'DNI', 'Contacto', 'Curso', 'Materias', 'Cursado', 'Comedor', 'Transporte', 'Deportes'], $filas);
     }
 
     /** RF-14: niveles, cursos y materias de cada docente. */
@@ -96,11 +99,30 @@ class ReporteService
             ['Curso', 'Nivel', 'Legajo', 'Alumno', 'Cursado', 'Comedor', 'Transporte', 'Deportes'], $filas);
     }
 
-    /** RF-16: materias con su curso, docentes y cantidad de alumnos. */
-    private function porMateria(?int $nivelId): array
+    /**
+     * RF-16: materias con su docente a cargo y sus alumnos.
+     * Sin filtro devuelve el resumen por materia; al elegir una, la nómina alumno por alumno.
+     */
+    private function porMateria(?int $materiaId): array
     {
+        if ($materiaId) {
+            $materia = Materia::with(['curso.nivel', 'profesores', 'curso.alumnos' => fn ($q) => $q->orderBy('apellido')->orderBy('nombre')])
+                ->findOrFail($materiaId);
+            $docentes = $materia->profesores->map->nombreCompleto()->join('; ') ?: 'Sin docente';
+
+            $filas = $materia->curso->alumnos->map(fn (Alumno $a) => [
+                $materia->nombre,
+                $materia->curso->nombreCompleto(),
+                $docentes,
+                $a->legajo,
+                $a->nombreCompleto(),
+            ]);
+
+            return $this->armar("Reporte de {$materia->nombre} — {$materia->curso->nombreCompleto()}",
+                ['Materia', 'Curso', 'Docentes', 'Legajo', 'Alumno'], $filas);
+        }
+
         $filas = Materia::with(['curso' => fn ($q) => $q->withCount('alumnos'), 'curso.nivel', 'profesores'])
-            ->when($nivelId, fn ($q) => $q->whereHas('curso', fn ($c) => $c->where('nivel_id', $nivelId)))
             ->get()
             ->sortBy(fn ($m) => [$m->curso->nivel_id, $m->curso->nombre, $m->nombre])
             ->map(fn (Materia $m) => [
@@ -158,6 +180,7 @@ class ReporteService
 
         return Alumno::with([
             'curso.nivel',
+            'curso.materias',
             'inscripcionesCursado' => $delCiclo,
             'inscripcionesComedor' => $delCiclo,
             'inscripcionesTransporte' => fn ($q) => $delCiclo($q)->with('recorrido'),

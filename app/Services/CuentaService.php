@@ -13,16 +13,20 @@ use Illuminate\Validation\Rule;
  */
 class CuentaService
 {
-    public static function reglas(?Model $persona, string $tabla): array
+    /**
+     * @param  bool  $conLegajo  RF-02: los profesores llevan legajo, igual que los alumnos.
+     */
+    public static function reglas(?Model $persona, string $tabla, bool $conLegajo = false): array
     {
-        return [
+        return array_filter([
+            'legajo' => $conLegajo ? ['required', 'string', 'max:20', Rule::unique($tabla)->ignore($persona)] : null,
             'dni' => ['required', 'string', 'max:15', Rule::unique($tabla)->ignore($persona)],
             'nombre' => ['required', 'string', 'max:60'],
             'apellido' => ['required', 'string', 'max:60'],
             'telefono' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($persona?->user_id)],
             'password' => [$persona?->exists ? 'nullable' : 'required', 'string', 'min:8'],
-        ];
+        ]);
     }
 
     public function guardar(Model $persona, array $datos, string $rol): Model
@@ -37,7 +41,7 @@ class CuentaService
             $user->save();
             $user->syncRoles([$rol]);
 
-            $persona->fill(collect($datos)->only(['dni', 'nombre', 'apellido', 'telefono'])->all());
+            $persona->fill(collect($datos)->only(['legajo', 'dni', 'nombre', 'apellido', 'telefono'])->all());
             $persona->user()->associate($user);
             $persona->save();
 

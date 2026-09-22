@@ -2,9 +2,10 @@
 @section('titulo', 'Profesores')
 @section('contenido')
 <x-encabezado titulo="Profesores" :nuevo="route('profesores.create')" />
-<x-tabla :columnas="['Profesor', 'DNI', 'Correo', 'Materias', 'Cursos', 'Niveles']">
+<x-tabla :columnas="['Legajo', 'Profesor', 'DNI', 'Correo', 'Materias', 'Cursos', 'Niveles']">
     @foreach ($profesores as $profesor)
         <tr>
+            <td>{{ $profesor->legajo ?? '—' }}</td>
             <td>{{ $profesor->nombreCompleto() }}</td>
             <td>{{ $profesor->dni }}</td>
             <td>{{ $profesor->user?->email }}</td>
