@@ -1,7 +1,89 @@
-﻿# EducacionDos
+# EducacionDos
 
-Proyecto de la facultad.
+Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables.
 
-## Ramas
-- `main`: rama principal.
-- `Nilo`: rama de trabajo.
+Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**.
+
+- **Producción:** _pendiente — ver [docs/despliegue.md](docs/despliegue.md)_
+- **Tablero del proyecto:** https://github.com/users/DaniloAgustinBenitez/projects/2
+
+## Perfiles
+
+| Rol | Qué puede hacer |
+|---|---|
+| Administrador | Todo: configuración institucional, personas y reportes |
+| Administrativo | Alumnos, profesores, tutores, asignaciones y reportes |
+| Docente | Ver sus materias, cursos y los alumnos de sus cursos |
+| Tutor / Padre | Ver a sus hijos e inscribirlos o darlos de baja en los servicios |
+
+### Usuarios de prueba
+
+Todos con contraseña `password` (se crean con `php artisan db:seed`):
+
+| Rol | Correo |
+|---|---|
+| Administrador | `admin@educacion.test` |
+| Administrativo | `administrativo@educacion.test` |
+| Docente | `docente@educacion.test` |
+| Tutor | `tutor@educacion.test` (padre de Sofía y Tomás Pérez) |
+
+## Instalación local (Windows + Laragon)
+
+Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), Git y VS Code con Intelephense.
+
+1. En Laragon, **Start All**, y después menú → *Tools → Path → Add Laragon to Path*. Reabrí la terminal.
+2. En `C:\laragon\bin\php\php-8.3.*\php.ini` verificá que esté activa `extension=zip` (la usa la exportación a Excel).
+3. Cloná e instalá:
+   ```bash
+   git clone https://github.com/DaniloAgustinBenitez/EducacionDos.git
+   cd EducacionDos
+   composer install
+   copy .env.example .env
+   php artisan key:generate
+   ```
+4. Creá la base (desde HeidiSQL de Laragon o por consola):
+   ```sql
+   CREATE DATABASE educacion CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+   ```
+5. Revisá en `.env` los datos `DB_*` (por defecto `root` sin contraseña, como Laragon) y, para los respaldos, la ruta de `MYSQLDUMP_PATH` y `MYSQL_PATH`.
+6. Creá las tablas y los datos de prueba, y levantá el servidor:
+   ```bash
+   php artisan migrate --seed
+   php artisan serve
+   ```
+7. Entrá a http://localhost:8000 con alguno de los usuarios de prueba.
+
+## Comandos útiles
+
+| Comando | Para qué |
+|---|---|
+| `php artisan test` | Corre los tests (SQLite en memoria, no toca tu base) |
+| `php artisan migrate:fresh --seed` | Reinicia la base con los datos de prueba |
+| `php artisan db:seed --class=VolumenSeeder` | Agrega 3000 alumnos para pruebas de rendimiento |
+| `php artisan reportes:medir` | Mide el tiempo de cada reporte (RNF-07: menos de 3 s) |
+| `php artisan db:respaldar` | Copia de seguridad en `storage/app/respaldos` |
+| `php artisan db:restaurar` | Restaura el respaldo más reciente |
+
+## Documentación
+
+- [Modelo de datos y DER](docs/modelo-datos.md) — el DER en formato dbdiagram.io está en [docs/der.dbml](docs/der.dbml)
+- [Reglas de negocio e interfaz del servicio de inscripciones](docs/interfaz-inscripciones.md)
+- [Despliegue en Railway](docs/despliegue.md)
+- [Copias de seguridad](docs/respaldos.md)
+- [Pruebas por rol y de diseño responsivo](docs/pruebas.md)
+- [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
+
+## Estructura principal
+
+```
+app/
+  Http/Controllers/     ABM, autogestión, docente y reportes
+  Services/             InscripcionService (reglas RN), SuperposicionHoraria, ReporteService, CuentaService
+  Policies/             AlumnoPolicy (RN-07: el tutor solo opera sobre sus hijos)
+  Support/Rol.php       Los cuatro roles y sus permisos
+database/
+  migrations/           Esquema completo
+  seeders/              Roles, datos institucionales, usuarios de prueba y volumen
+resources/views/        Vistas Blade (layout con Bootstrap 5 + DataTables)
+tests/                  Tests unitarios y de integración
+```
