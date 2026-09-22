@@ -66,12 +66,14 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 
 ## Documentación
 
+- [Matriz de trazabilidad: qué requerimiento cumple cada archivo](docs/trazabilidad.md)
 - [Modelo de datos y DER](docs/modelo-datos.md) — el DER en formato dbdiagram.io está en [docs/der.dbml](docs/der.dbml)
 - [Reglas de negocio e interfaz del servicio de inscripciones](docs/interfaz-inscripciones.md)
 - [Despliegue en Railway](docs/despliegue.md)
 - [Copias de seguridad](docs/respaldos.md)
 - [Pruebas por rol y de diseño responsivo](docs/pruebas.md)
 - [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
+- [Correcciones a aplicar en el Plan de Trabajo](docs/correcciones-plan.md)
 
 ## Estructura principal
 
