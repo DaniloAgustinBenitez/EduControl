@@ -2,12 +2,13 @@
 @section('titulo', 'Alumnos')
 @section('contenido')
 <x-encabezado titulo="Alumnos" :nuevo="route('alumnos.create')" />
-<x-tabla :columnas="['Legajo', 'Alumno', 'DNI', 'Curso', 'Tutores']">
+<x-tabla :columnas="['Legajo', 'Alumno', 'DNI', 'Contacto', 'Curso', 'Tutores']">
     @foreach ($alumnos as $alumno)
         <tr>
             <td>{{ $alumno->legajo }}</td>
             <td>{{ $alumno->nombreCompleto() }}</td>
             <td>{{ $alumno->dni }}</td>
+            <td>{{ $alumno->telefono }}<div class="small" style="color: var(--ec-tenue)">{{ $alumno->email }}</div></td>
             <td>{{ $alumno->curso?->nombreCompleto() ?? '—' }}</td>
             <td>{{ $alumno->tutores->map->nombreCompleto()->join('; ') ?: '—' }}</td>
             <x-acciones :editar="route('alumnos.edit', $alumno)" :eliminar="route('alumnos.destroy', $alumno)"

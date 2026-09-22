@@ -29,7 +29,7 @@ class ProfesorController extends Controller
 
     public function store(Request $request)
     {
-        $profesor = $this->cuentas->guardar(new Profesor, $request->validate(CuentaService::reglas(null, 'profesores')), Rol::DOCENTE);
+        $profesor = $this->cuentas->guardar(new Profesor, $request->validate(CuentaService::reglas(null, 'profesores', conLegajo: true)), Rol::DOCENTE);
 
         return redirect()->route('profesores.asignaciones', $profesor)->with('ok', 'Profesor creado. Asignale sus materias y cursos.');
     }
@@ -41,7 +41,7 @@ class ProfesorController extends Controller
 
     public function update(Request $request, Profesor $profesor)
     {
-        $this->cuentas->guardar($profesor, $request->validate(CuentaService::reglas($profesor, 'profesores')), Rol::DOCENTE);
+        $this->cuentas->guardar($profesor, $request->validate(CuentaService::reglas($profesor, 'profesores', conLegajo: true)), Rol::DOCENTE);
 
         return redirect()->route('profesores.index')->with('ok', 'Profesor actualizado.');
     }

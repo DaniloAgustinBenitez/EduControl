@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Table('alumnos')]
-#[Fillable(['legajo', 'dni', 'nombre', 'apellido', 'fecha_nacimiento'])]
+#[Fillable(['legajo', 'dni', 'nombre', 'apellido', 'fecha_nacimiento', 'telefono', 'email', 'direccion'])]
 class Alumno extends Model
 {
     protected function casts(): array

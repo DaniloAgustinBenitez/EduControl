@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 #[Table('profesores')]
-#[Fillable(['user_id', 'dni', 'nombre', 'apellido', 'telefono'])]
+#[Fillable(['user_id', 'legajo', 'dni', 'nombre', 'apellido', 'telefono'])]
 class Profesor extends Model
 {
     use EsPersona;

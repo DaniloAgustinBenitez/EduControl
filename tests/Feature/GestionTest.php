@@ -111,7 +111,7 @@ class GestionTest extends TestCase
     public function test_alta_de_profesor_y_asignaciones(): void
     {
         $this->como('administrativo@educontrol.test')->post('/profesores', [
-            'nombre' => 'Juan', 'apellido' => 'Suárez', 'dni' => '27000111',
+            'legajo' => 'P-0010', 'nombre' => 'Juan', 'apellido' => 'Suárez', 'dni' => '27000111',
             'email' => 'juan@example.com', 'password' => 'secreta123',
         ])->assertSessionHasNoErrors();
 

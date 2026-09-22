@@ -1,5 +1,9 @@
-{{-- Datos personales + cuenta de acceso, compartido por profesores y tutores. Espera $persona. --}}
+{{-- Datos personales + cuenta de acceso, compartido por profesores y tutores.
+     Espera $persona y, opcionalmente, $conLegajo (RF-02: los profesores llevan legajo). --}}
 <div class="row">
+    @if ($conLegajo ?? false)
+        <div class="col-md-6"><x-campo nombre="legajo" etiqueta="Legajo" :valor="$persona->legajo" requerido maxlength="20" /></div>
+    @endif
     <div class="col-md-6"><x-campo nombre="nombre" etiqueta="Nombre" :valor="$persona->nombre" requerido maxlength="60" /></div>
     <div class="col-md-6"><x-campo nombre="apellido" etiqueta="Apellido" :valor="$persona->apellido" requerido maxlength="60" /></div>
     <div class="col-md-6"><x-campo nombre="dni" etiqueta="DNI" :valor="$persona->dni" requerido maxlength="15" inputmode="numeric" /></div>
