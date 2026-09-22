@@ -1,0 +1,157 @@
+// DER de EducacionDos — pegar en https://dbdiagram.io/d para verlo (tarea 1.4)
+// Refleja exactamente las migraciones de database/migrations.
+
+Project EducacionDos {
+  database_type: 'MySQL'
+}
+
+// ---------- Estructura institucional ----------
+
+Table niveles {
+  id bigint [pk, increment]
+  nombre varchar(60) [unique, not null]
+}
+
+Table cursos {
+  id bigint [pk, increment]
+  nivel_id bigint [not null, ref: > niveles.id, note: 'RN-02: nivel obligatorio']
+  nombre varchar(60) [not null]
+  indexes { (nivel_id, nombre) [unique] }
+}
+
+Table materias {
+  id bigint [pk, increment]
+  curso_id bigint [not null, ref: > cursos.id]
+  nombre varchar(80) [not null]
+  indexes { (curso_id, nombre) [unique] }
+}
+
+Table deportes {
+  id bigint [pk, increment]
+  nombre varchar(60) [unique, not null]
+  descripcion varchar(255)
+}
+
+Table recorridos {
+  id bigint [pk, increment]
+  nombre varchar(60) [unique, not null]
+  descripcion varchar(255)
+}
+
+Table horarios {
+  id bigint [pk, increment]
+  horarioable_type varchar [not null, note: 'App\\Models\\Curso o App\\Models\\Deporte']
+  horarioable_id bigint [not null]
+  dia tinyint [not null, note: '1 = lunes ... 7 = domingo']
+  hora_inicio time [not null]
+  hora_fin time [not null]
+  indexes { (horarioable_type, horarioable_id) }
+  Note: 'Entidad propia para validar superposición (RN-04, RN-05). Relación polimórfica con cursos (horario de cursado) y deportes.'
+}
+
+Table ciclos_lectivos {
+  id bigint [pk, increment]
+  anio smallint [unique, not null]
+  activo boolean [not null, default: false]
+}
+
+// ---------- Personas y cuentas ----------
+
+Table users {
+  id bigint [pk, increment]
+  name varchar [not null]
+  email varchar [unique, not null]
+  password varchar [not null, note: 'bcrypt (RNF-02)']
+}
+
+Table profesores {
+  id bigint [pk, increment]
+  user_id bigint [unique, ref: - users.id]
+  dni varchar(15) [unique, not null]
+  nombre varchar(60) [not null]
+  apellido varchar(60) [not null]
+  telefono varchar(30)
+}
+
+Table tutores {
+  id bigint [pk, increment]
+  user_id bigint [unique, ref: - users.id]
+  dni varchar(15) [unique, not null]
+  nombre varchar(60) [not null]
+  apellido varchar(60) [not null]
+  telefono varchar(30)
+}
+
+Table administrativos {
+  id bigint [pk, increment]
+  user_id bigint [unique, ref: - users.id]
+  dni varchar(15) [unique, not null]
+  nombre varchar(60) [not null]
+  apellido varchar(60) [not null]
+  telefono varchar(30)
+}
+
+Table alumnos {
+  id bigint [pk, increment]
+  legajo varchar(20) [unique, not null]
+  dni varchar(15) [unique, not null]
+  nombre varchar(60) [not null]
+  apellido varchar(60) [not null]
+  fecha_nacimiento date
+  curso_id bigint [ref: > cursos.id, note: 'RN-01: un único curso por alumno']
+}
+
+Table alumno_tutor {
+  alumno_id bigint [pk, ref: > alumnos.id]
+  tutor_id bigint [pk, ref: > tutores.id]
+  parentesco varchar(30)
+}
+
+Table materia_profesor {
+  materia_id bigint [pk, ref: > materias.id]
+  profesor_id bigint [pk, ref: > profesores.id]
+}
+
+Table curso_profesor {
+  curso_id bigint [pk, ref: > cursos.id]
+  profesor_id bigint [pk, ref: > profesores.id]
+}
+
+Table nivel_profesor {
+  nivel_id bigint [pk, ref: > niveles.id]
+  profesor_id bigint [pk, ref: > profesores.id]
+}
+
+// ---------- Inscripciones (por ciclo lectivo) ----------
+
+Table inscripciones_cursado {
+  id bigint [pk, increment]
+  alumno_id bigint [not null, ref: > alumnos.id]
+  ciclo_lectivo_id bigint [not null, ref: > ciclos_lectivos.id]
+  curso_id bigint [not null, ref: > cursos.id]
+  indexes { (alumno_id, ciclo_lectivo_id) [unique] }
+}
+
+Table inscripciones_comedor {
+  id bigint [pk, increment]
+  alumno_id bigint [not null, ref: > alumnos.id]
+  ciclo_lectivo_id bigint [not null, ref: > ciclos_lectivos.id]
+  indexes { (alumno_id, ciclo_lectivo_id) [unique] }
+}
+
+Table inscripciones_transporte {
+  id bigint [pk, increment]
+  alumno_id bigint [not null, ref: > alumnos.id]
+  ciclo_lectivo_id bigint [not null, ref: > ciclos_lectivos.id]
+  recorrido_id bigint [not null, ref: > recorridos.id]
+  indexes { (alumno_id, ciclo_lectivo_id) [unique, note: 'RN-06: un solo recorrido'] }
+}
+
+Table inscripciones_deporte {
+  id bigint [pk, increment]
+  alumno_id bigint [not null, ref: > alumnos.id]
+  ciclo_lectivo_id bigint [not null, ref: > ciclos_lectivos.id]
+  deporte_id bigint [not null, ref: > deportes.id]
+  indexes { (alumno_id, ciclo_lectivo_id, deporte_id) [unique, name: 'insc_deporte_unica'] }
+  Note: 'Tope de 2 (RN-03) y superposición (RN-04/05) se validan en InscripcionService'
+}
