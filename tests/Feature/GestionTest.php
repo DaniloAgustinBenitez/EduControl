@@ -138,7 +138,8 @@ class GestionTest extends TestCase
         $this->post("$url/deporte", ['deporte_id' => Deporte::where('nombre', 'Fútbol')->value('id')])->assertSessionHas('ok');
         $this->post("$url/deporte", ['deporte_id' => Deporte::where('nombre', 'Básquet')->value('id')])->assertSessionHas('error');
 
-        $this->get($url)->assertOk()->assertSee('Fútbol')->assertSee('Recorrido Norte');
+        // assertSeeText ignora el marcado: valida lo que ve el usuario, no cómo está maquetado.
+        $this->get($url)->assertOk()->assertSeeText('Fútbol')->assertSeeText('Recorrido Norte');
 
         $comedor = $sofia->inscripcionesComedor()->first();
         $this->delete("$url/comedor/{$comedor->id}")->assertSessionHas('ok');

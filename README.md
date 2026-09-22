@@ -2,7 +2,7 @@
 
 Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables.
 
-Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**.
+Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**, con menú lateral, modo claro/oscuro y páginas de error propias. Los estilos del sistema están en `public/css/educontrol.css`.
 
 - **Producción:** _pendiente — ver [docs/despliegue.md](docs/despliegue.md)_
 - **Tablero del proyecto:** https://github.com/users/DaniloAgustinBenitez/projects/2
