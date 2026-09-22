@@ -28,14 +28,14 @@ class GestionTest extends TestCase
 
     public function test_rn02_curso_sin_nivel_es_rechazado(): void
     {
-        $this->como('admin@educacion.test')
+        $this->como('admin@educontrol.test')
             ->post('/cursos', ['nombre' => 'Sin nivel'])
             ->assertSessionHasErrors('nivel_id');
     }
 
     public function test_alta_de_curso_y_su_horario_de_cursado(): void
     {
-        $this->como('admin@educacion.test')
+        $this->como('admin@educontrol.test')
             ->post('/cursos', ['nivel_id' => Nivel::first()->id, 'nombre' => 'Sala de 3'])
             ->assertSessionHasNoErrors();
 
@@ -50,7 +50,7 @@ class GestionTest extends TestCase
     public function test_no_se_elimina_un_nivel_con_cursos(): void
     {
         $nivel = Nivel::first();
-        $this->como('admin@educacion.test')->delete("/niveles/{$nivel->id}")->assertSessionHas('error');
+        $this->como('admin@educontrol.test')->delete("/niveles/{$nivel->id}")->assertSessionHas('error');
         $this->assertModelExists($nivel);
     }
 
@@ -58,7 +58,7 @@ class GestionTest extends TestCase
     {
         $existente = Alumno::first();
 
-        $this->como('administrativo@educacion.test')
+        $this->como('administrativo@educontrol.test')
             ->post('/alumnos', ['legajo' => $existente->legajo, 'dni' => $existente->dni, 'nombre' => 'X', 'apellido' => 'Y'])
             ->assertSessionHasErrors(['legajo', 'dni']);
     }
@@ -68,7 +68,7 @@ class GestionTest extends TestCase
         $alumno = Alumno::where('legajo', 'A-0001')->first();
         $otro = Curso::where('id', '!=', $alumno->curso_id)->first();
 
-        $this->como('administrativo@educacion.test')
+        $this->como('administrativo@educontrol.test')
             ->put("/alumnos/{$alumno->id}/curso", ['curso_id' => $otro->id])
             ->assertSessionHas('error');
         $this->assertNotSame($otro->id, $alumno->fresh()->curso_id);
@@ -84,7 +84,7 @@ class GestionTest extends TestCase
         $alumno = Alumno::where('legajo', 'A-0001')->first();
         $otro = Curso::where('id', '!=', $alumno->curso_id)->first();
 
-        $this->como('administrativo@educacion.test')
+        $this->como('administrativo@educontrol.test')
             ->put("/alumnos/{$alumno->id}", $alumno->only('legajo', 'dni', 'nombre', 'apellido') + ['curso_id' => $otro->id]);
 
         $this->assertNotSame($otro->id, $alumno->fresh()->curso_id);
@@ -94,7 +94,7 @@ class GestionTest extends TestCase
     {
         $hijo = Alumno::where('legajo', 'A-0003')->first();
 
-        $this->como('administrativo@educacion.test')->post('/tutores', [
+        $this->como('administrativo@educontrol.test')->post('/tutores', [
             'nombre' => 'Marta', 'apellido' => 'Fernández', 'dni' => '30999888',
             'email' => 'marta@example.com', 'password' => 'secreta123',
             'alumnos' => [$hijo->id], 'parentesco' => 'Madre',
@@ -110,7 +110,7 @@ class GestionTest extends TestCase
 
     public function test_alta_de_profesor_y_asignaciones(): void
     {
-        $this->como('administrativo@educacion.test')->post('/profesores', [
+        $this->como('administrativo@educontrol.test')->post('/profesores', [
             'nombre' => 'Juan', 'apellido' => 'Suárez', 'dni' => '27000111',
             'email' => 'juan@example.com', 'password' => 'secreta123',
         ])->assertSessionHasNoErrors();
@@ -129,7 +129,7 @@ class GestionTest extends TestCase
     {
         $sofia = Alumno::where('legajo', 'A-0001')->first();
         $url = "/autogestion/alumnos/{$sofia->id}";
-        $this->como('tutor@educacion.test');
+        $this->como('tutor@educontrol.test');
 
         $this->post("$url/cursado")->assertSessionHas('ok');
         $this->post("$url/comedor")->assertSessionHas('ok');
@@ -147,7 +147,7 @@ class GestionTest extends TestCase
 
     public function test_reportes_se_exportan_a_pdf_y_planilla(): void
     {
-        $this->como('administrativo@educacion.test');
+        $this->como('administrativo@educontrol.test');
 
         foreach (['alumno', 'docente', 'curso', 'materia', 'deporte', 'recorrido'] as $tipo) {
             $this->get("/reportes/{$tipo}?formato=pdf")->assertOk()->assertHeader('content-type', 'application/pdf');
@@ -157,7 +157,7 @@ class GestionTest extends TestCase
 
     public function test_solo_un_ciclo_lectivo_activo(): void
     {
-        $this->como('admin@educacion.test')->post('/ciclos', ['anio' => 2027, 'activo' => '1'])->assertSessionHasNoErrors();
+        $this->como('admin@educontrol.test')->post('/ciclos', ['anio' => 2027, 'activo' => '1'])->assertSessionHasNoErrors();
 
         $this->assertSame(1, CicloLectivo::where('activo', true)->count());
         $this->assertSame(2027, CicloLectivo::actual()->anio);

@@ -1,4 +1,4 @@
-# EducacionDos
+# EduControl
 
 Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables.
 
@@ -22,10 +22,10 @@ Todos con contraseña `password` (se crean con `php artisan db:seed`):
 
 | Rol | Correo |
 |---|---|
-| Administrador | `admin@educacion.test` |
-| Administrativo | `administrativo@educacion.test` |
-| Docente | `docente@educacion.test` |
-| Tutor | `tutor@educacion.test` (padre de Sofía y Tomás Pérez) |
+| Administrador | `admin@educontrol.test` |
+| Administrativo | `administrativo@educontrol.test` |
+| Docente | `docente@educontrol.test` |
+| Tutor | `tutor@educontrol.test` (padre de Sofía y Tomás Pérez) |
 
 ## Instalación local (Windows + Laragon)
 
@@ -35,8 +35,8 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 2. En `C:\laragon\bin\php\php-8.3.*\php.ini` verificá que esté activa `extension=zip` (la usa la exportación a Excel).
 3. Cloná e instalá:
    ```bash
-   git clone https://github.com/DaniloAgustinBenitez/EducacionDos.git
-   cd EducacionDos
+   git clone https://github.com/DaniloAgustinBenitez/EduControl.git
+   cd EduControl
    composer install
    copy .env.example .env
    php artisan key:generate

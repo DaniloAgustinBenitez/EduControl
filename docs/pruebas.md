@@ -34,14 +34,14 @@ Medido con 3003 alumnos cargados con `VolumenSeeder`, usando `php artisan report
 
 Hacer una vez con cada usuario de prueba y marcar:
 
-**Administrador** (`admin@educacion.test`)
+**Administrador** (`admin@educontrol.test`)
 - [ ] Crear el ciclo 2027 activo y verificar que el 2026 queda cerrado.
 - [ ] Crear un nivel y un curso en ese nivel, y cargarle el horario de cursado.
 - [ ] Intentar una franja superpuesta en el mismo curso: tiene que rechazarla.
 - [ ] Crear un deporte con horario y una materia.
 - [ ] Intentar borrar un nivel que tiene cursos: tiene que avisar y no borrarlo.
 
-**Administrativo** (`administrativo@educacion.test`)
+**Administrativo** (`administrativo@educontrol.test`)
 - [ ] Dar de alta un alumno y asignarle un curso.
 - [ ] Intentar asignarle un segundo curso: tiene que rechazarlo (RN-01).
 - [ ] Dar de alta un profesor, asignarle materias y verificar que se agregan su curso y su nivel.
@@ -49,12 +49,12 @@ Hacer una vez con cada usuario de prueba y marcar:
 - [ ] Abrir los 6 reportes, filtrar y exportar a PDF y Excel.
 - [ ] Intentar entrar a `/niveles` escribiendo la URL: tiene que dar 403.
 
-**Docente** (`docente@educacion.test`)
+**Docente** (`docente@educontrol.test`)
 - [ ] Ver sus materias y cursos (1° año: Matemática y Biología).
 - [ ] Ver el listado de alumnos de 1° año.
 - [ ] Intentar abrir otro curso cambiando el id en la URL: tiene que dar 403.
 
-**Tutor** (`tutor@educacion.test`)
+**Tutor** (`tutor@educontrol.test`)
 - [ ] Ver a Sofía y a Tomás, y a nadie más.
 - [ ] Inscribir a Sofía en cursado, comedor, el recorrido Norte y Fútbol.
 - [ ] Intentar Básquet: se superpone con Fútbol y tiene que rechazarlo (RN-04).

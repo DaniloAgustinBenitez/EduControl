@@ -19,12 +19,12 @@ class UsuariosPruebaSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->usuario('admin@educacion.test', 'Ana Administradora', Rol::ADMINISTRADOR);
+        $this->usuario('admin@educontrol.test', 'Ana Administradora', Rol::ADMINISTRADOR);
 
-        $administrativo = $this->usuario('administrativo@educacion.test', 'Pablo Gómez', Rol::ADMINISTRATIVO);
+        $administrativo = $this->usuario('administrativo@educontrol.test', 'Pablo Gómez', Rol::ADMINISTRATIVO);
         Administrativo::firstOrCreate(['dni' => '20111222'], ['user_id' => $administrativo->id, 'nombre' => 'Pablo', 'apellido' => 'Gómez']);
 
-        $docenteUser = $this->usuario('docente@educacion.test', 'Laura Martínez', Rol::DOCENTE);
+        $docenteUser = $this->usuario('docente@educontrol.test', 'Laura Martínez', Rol::DOCENTE);
         $profesor = Profesor::firstOrCreate(['dni' => '25333444'], ['user_id' => $docenteUser->id, 'nombre' => 'Laura', 'apellido' => 'Martínez']);
         $primero = Curso::where('nombre', '1° año')->firstOrFail();
         $profesor->niveles()->syncWithoutDetaching([$primero->nivel_id]);
@@ -33,7 +33,7 @@ class UsuariosPruebaSeeder extends Seeder
             Materia::where('curso_id', $primero->id)->whereIn('nombre', ['Matemática', 'Biología'])->pluck('id')
         );
 
-        $tutorUser = $this->usuario('tutor@educacion.test', 'Carlos Pérez', Rol::TUTOR);
+        $tutorUser = $this->usuario('tutor@educontrol.test', 'Carlos Pérez', Rol::TUTOR);
         $tutor = Tutor::firstOrCreate(['dni' => '28555666'], ['user_id' => $tutorUser->id, 'nombre' => 'Carlos', 'apellido' => 'Pérez']);
 
         $hijos = [

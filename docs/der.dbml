@@ -1,7 +1,7 @@
-// DER de EducacionDos — pegar en https://dbdiagram.io/d para verlo (tarea 1.4)
+// DER de EduControl — pegar en https://dbdiagram.io/d para verlo (tarea 1.4)
 // Refleja exactamente las migraciones de database/migrations.
 
-Project EducacionDos {
+Project EduControl {
   database_type: 'MySQL'
 }
 

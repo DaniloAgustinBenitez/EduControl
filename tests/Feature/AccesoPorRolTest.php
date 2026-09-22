@@ -36,10 +36,10 @@ class AccesoPorRolTest extends TestCase
     public static function roles(): array
     {
         return [
-            'administrador' => ['admin@educacion.test', ['configuracion', 'usuarios', 'reportes']],
-            'administrativo' => ['administrativo@educacion.test', ['usuarios', 'reportes']],
-            'docente' => ['docente@educacion.test', ['docente']],
-            'tutor' => ['tutor@educacion.test', ['autogestion']],
+            'administrador' => ['admin@educontrol.test', ['configuracion', 'usuarios', 'reportes']],
+            'administrativo' => ['administrativo@educontrol.test', ['usuarios', 'reportes']],
+            'docente' => ['docente@educontrol.test', ['docente']],
+            'tutor' => ['tutor@educontrol.test', ['autogestion']],
         ];
     }
 
@@ -75,10 +75,10 @@ class AccesoPorRolTest extends TestCase
 
     public function test_login_con_credenciales_correctas_e_incorrectas(): void
     {
-        $this->post('/login', ['email' => 'tutor@educacion.test', 'password' => 'mala'])->assertSessionHasErrors('email');
+        $this->post('/login', ['email' => 'tutor@educontrol.test', 'password' => 'mala'])->assertSessionHasErrors('email');
         $this->assertGuest();
 
-        $this->post('/login', ['email' => 'tutor@educacion.test', 'password' => 'password'])->assertRedirect('/');
+        $this->post('/login', ['email' => 'tutor@educontrol.test', 'password' => 'password'])->assertRedirect('/');
         $this->assertAuthenticated();
     }
 
@@ -90,7 +90,7 @@ class AccesoPorRolTest extends TestCase
 
     public function test_rn07_tutor_no_opera_sobre_alumno_ajeno_por_url(): void
     {
-        $tutor = User::where('email', 'tutor@educacion.test')->first();
+        $tutor = User::where('email', 'tutor@educontrol.test')->first();
         $ajeno = Alumno::where('legajo', 'A-0003')->first();
         $propio = Alumno::where('legajo', 'A-0001')->first();
 
@@ -105,11 +105,11 @@ class AccesoPorRolTest extends TestCase
 
     public function test_rn07_tutor_no_da_de_baja_inscripcion_de_otro_alumno(): void
     {
-        $tutor = User::where('email', 'tutor@educacion.test')->first();
+        $tutor = User::where('email', 'tutor@educontrol.test')->first();
         $propio = Alumno::where('legajo', 'A-0001')->first();
         $ajeno = Alumno::where('legajo', 'A-0003')->first();
 
-        $this->actingAs(User::where('email', 'admin@educacion.test')->first());
+        $this->actingAs(User::where('email', 'admin@educontrol.test')->first());
         $this->post("/autogestion/alumnos/{$ajeno->id}/comedor")->assertForbidden(); // el admin no usa la autogestión
 
         $inscripcion = InscripcionComedor::create(['alumno_id' => $ajeno->id, 'ciclo_lectivo_id' => CicloLectivo::actual()->id]);
@@ -121,7 +121,7 @@ class AccesoPorRolTest extends TestCase
 
     public function test_docente_no_ve_cursos_que_no_tiene_asignados(): void
     {
-        $this->actingAs(User::where('email', 'docente@educacion.test')->first());
+        $this->actingAs(User::where('email', 'docente@educontrol.test')->first());
 
         $this->get('/docente/cursos/'.Curso::where('nombre', '1° año')->value('id'))->assertOk()->assertSee('Fernández');
         $this->get('/docente/cursos/'.Curso::where('nombre', '2° año')->value('id'))->assertForbidden();
