@@ -53,7 +53,7 @@ Punto 4 de la Parte 2 del TP de la Unidad 4. Medido el 21/10/2026.
 | Sin versión empaquetada | Generar un `.zip` desplegable por cada merge a `main` (gestión de artefactos) | Aplicada |
 | PR enormes y sin revisión | Regla de PR chicos y "CI en verde para mergear" en CONTRIBUTING y en la plantilla de PR | Aplicada |
 | Despliegue pendiente | Conectar Railway a `main` con *Wait for CI* | Pendiente: requiere la cuenta de Railway |
-| Tablero desactualizado | Activar en el Project el workflow *Item closed → Hecho* y mover las 49 tarjetas | Pendiente: se hace desde la configuración del Project |
+| Tablero desactualizado | Mover las tarjetas de issues cerrados a *Hecho* y activar en el Project el workflow *Item closed → Hecho* | Tarjetas movidas (50 cerrados en *Hecho*, 8 abiertos en *Por hacer*). El workflow se activa desde la configuración del Project |
 
 ## Resultados del CI y segunda mejora
 
@@ -83,3 +83,4 @@ Punto 4 de la Parte 2 del TP de la Unidad 4. Medido el 21/10/2026.
 | Artefactos por versión | Ninguno | Reporte de tests + cobertura (14 días) y paquete `.zip` (30 días) |
 | Aviso de fallos | Ninguno | Correo de GitHub y cruz roja en el PR |
 | Requisito para mergear | Solo los tests locales | Tests locales + CI en verde + PR chico |
+| Tablero Kanban | 49 de 50 issues cerrados fuera de *Hecho* | 50 de 50 en *Hecho* |
