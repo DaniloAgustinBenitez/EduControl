@@ -1,5 +1,7 @@
 # EduControl
 
+[![CI](https://github.com/DaniloAgustinBenitez/EduControl/actions/workflows/ci.yml/badge.svg)](https://github.com/DaniloAgustinBenitez/EduControl/actions/workflows/ci.yml)
+
 Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables.
 
 Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**, con menú lateral, modo claro/oscuro y páginas de error propias. Los estilos del sistema están en `public/css/educontrol.css`.
@@ -72,6 +74,8 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 - [Despliegue en Railway](docs/despliegue.md)
 - [Copias de seguridad](docs/respaldos.md)
 - [Pruebas por rol y de diseño responsivo](docs/pruebas.md)
+- [Integración y entrega continua (pipeline de GitHub Actions)](docs/ci-cd.md)
+- [Métricas de productividad y mejoras](docs/metricas.md)
 - [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
 - [Correcciones a aplicar en el Plan de Trabajo](docs/correcciones-plan.md)
 

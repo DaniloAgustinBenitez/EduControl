@@ -58,7 +58,13 @@ class AccesoPorRolTest extends TestCase
         }
     }
 
-    #[DataProvider('roles')]
+    /** El usuario de prueba de cada rol, sin sus permisos. */
+    public static function usuarios(): array
+    {
+        return array_map(fn (array $rol) => [$rol[0]], self::roles());
+    }
+
+    #[DataProvider('usuarios')]
     public function test_inicio_redirige_o_muestra_el_panel(string $email): void
     {
         $this->actingAs(User::where('email', $email)->first())

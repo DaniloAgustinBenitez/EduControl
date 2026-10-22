@@ -33,10 +33,12 @@ Tipos: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`. Cuando aplique, citar
 
 ## Pull requests
 
-1. Antes de abrir el PR: `php artisan test` en verde.
+1. Antes de abrir el PR: `php artisan test` y `vendor/bin/pint --test` en verde.
 2. Título igual al commit principal. Completar la plantilla (qué cambia, cómo probarlo, issues que cierra).
-3. **Revisión cruzada:** el otro integrante revisa y aprueba antes de mergear. Si se trabaja solo, se revisa el diff completo en GitHub antes de mergear.
-4. Se mergea con *Squash and merge* y se borra la rama.
+3. **CI en verde:** el pipeline de GitHub Actions ([docs/ci-cd.md](docs/ci-cd.md)) tiene que pasar. Con la cruz roja no se mergea.
+4. **Revisión cruzada:** el otro integrante revisa y aprueba antes de mergear. Si se trabaja solo, se revisa el diff completo en GitHub antes de mergear.
+5. Se mergea con *Squash and merge* y se borra la rama.
+6. **PR chicos:** un PR por issue o por grupo chico de issues relacionados, no uno por etapa completa. Así el CI revisa cada cambio por separado y la revisión es más fácil.
 
 ## Tablero
 

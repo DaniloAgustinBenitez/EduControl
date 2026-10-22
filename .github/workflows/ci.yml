@@ -1,0 +1,127 @@
+# Pipeline de integración continua de EduControl.
+# Etapas: Build (dependencias) → Lint (Pint) → Test (PHPUnit + cobertura) → Package (solo en main).
+# Explicación completa en docs/ci-cd.md.
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Si llega un push nuevo a la misma rama, se cancela la corrida anterior.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.3'
+  PHP_EXTENSIONS: mbstring, pdo_sqlite, sqlite3, zip, gd, intl, bcmath
+
+jobs:
+  pruebas:
+    name: Build, lint y tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Ubicar la caché de Composer
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+      - name: Restaurar la caché de Composer
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Build - instalar dependencias
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Preparar el entorno (.env y APP_KEY)
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Lint - estilo de código con Pint
+        run: vendor/bin/pint --test
+
+      - name: Test - PHPUnit con cobertura
+        run: |
+          mkdir -p reportes
+          vendor/bin/phpunit --colors=never \
+            --log-junit reportes/junit.xml \
+            --coverage-clover reportes/clover.xml \
+            --coverage-html reportes/cobertura \
+            --coverage-text=reportes/cobertura.txt
+
+      - name: Resumen en la página de la corrida
+        if: always()
+        run: |
+          {
+            echo "## Resultado de los tests"
+            if [ -f reportes/junit.xml ]; then
+              grep -m1 -o 'tests="[0-9]*" assertions="[0-9]*" errors="[0-9]*" failures="[0-9]*" skipped="[0-9]*" time="[0-9.]*"' reportes/junit.xml
+            fi
+            echo
+            echo "## Cobertura"
+            echo '```'
+            [ -f reportes/cobertura.txt ] && grep -A4 'Summary' reportes/cobertura.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar reportes de tests y cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reportes-tests-${{ github.sha }}
+          path: reportes/
+          retention-days: 14
+
+  paquete:
+    name: Package - paquete desplegable
+    needs: pruebas
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+          tools: composer:v2
+
+      - name: Armar el paquete sin tests ni dependencias de desarrollo
+        run: |
+          mkdir -p dist/educontrol
+          git archive HEAD | tar -x -C dist/educontrol
+          cd dist/educontrol
+          rm -rf tests phpunit.xml
+          composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist --no-scripts
+          cd ..
+          zip -qr "educontrol-${GITHUB_SHA::7}.zip" educontrol
+
+      - name: Guardar el paquete como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: educontrol-${{ github.sha }}
+          path: dist/*.zip
+          retention-days: 30

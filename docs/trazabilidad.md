@@ -1,7 +1,7 @@
 # Matriz de trazabilidad
 
 Dónde se implementa cada requerimiento del plan de trabajo y qué test lo verifica.
-Estado al 22/09/2026: **50 tests, 250 verificaciones, todos en verde** (`php artisan test`).
+Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php artisan test` y CI de GitHub Actions), con 83,6 % de cobertura de líneas.
 
 ## Requerimientos funcionales
 
