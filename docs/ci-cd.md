@@ -23,7 +23,7 @@ Commit → Build → Lint → Test → Package → (Deploy en Railway) → Notif
 |---|---|---|
 | **Build** | `composer install` (con caché de Composer entre corridas) | Composer 2, PHP 8.3 |
 | **Lint** | `vendor/bin/pint --test`: falla si el código no respeta el estilo de Laravel | Laravel Pint |
-| **Test** | 50 tests (unitarios y de integración) sobre SQLite en memoria, con cobertura | PHPUnit 12 + PCOV |
+| **Test** | 56 tests (unitarios y de integración) sobre SQLite en memoria, con cobertura | PHPUnit 12 + PCOV |
 | **Package** | Arma `educontrol-<commit>.zip` sin tests ni dependencias de desarrollo. Solo en `main` | `git archive`, Composer `--no-dev` |
 | **Deploy** | Railway despliega `main` cuando el CI pasa (ver más abajo) | Railway |
 | **Notify** | GitHub avisa por correo al autor del commit si el pipeline falla, y el PR muestra la tilde verde o la cruz roja | GitHub |

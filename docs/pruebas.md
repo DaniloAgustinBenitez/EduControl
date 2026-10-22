@@ -12,6 +12,10 @@ php artisan test
 | `tests/Feature/InscripcionServiceTest.php` | RN-01, RN-03, RN-04, RN-05 y RN-06, duplicados y bajas |
 | `tests/Feature/AccesoPorRolTest.php` | Cada rol entra solo a lo suyo, incluso por URL directa (2.7, 5.9), además de login y hash de contraseñas |
 | `tests/Feature/GestionTest.php` | ABM, asignaciones, autogestión completa del tutor y exportación de los 6 reportes |
+| `tests/Feature/ConfiguracionTest.php` | ABM de niveles, materias, deportes y recorridos; no se borran deportes ni recorridos con inscriptos |
+| `tests/Feature/RequerimientosTest.php` | RF-01, RF-02, RF-13, RF-16 y mensajes de error en español (RNF-05) |
+
+Los tests corren también en el CI en cada push, con reporte de cobertura (ver [ci-cd.md](ci-cd.md)).
 
 ## Rendimiento (6.7, RNF-07)
 
