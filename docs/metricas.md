@@ -1,6 +1,6 @@
 # Métricas de productividad
 
-Punto 4 de la Parte 2 del TP de la Unidad 4. Medido el 21/10/2026.
+Punto 4 de la Parte 2 del TP de la Unidad 4. Medido el 21/10/2026 y actualizado el 24/10/2026.
 
 ## Herramientas usadas
 
@@ -51,8 +51,11 @@ Punto 4 de la Parte 2 del TP de la Unidad 4. Medido el 21/10/2026.
 | Cobertura desconocida | Medir cobertura con PCOV en el CI y publicarla como artefacto | Aplicada |
 | ABM de configuración sin tests | Tests de alta, edición, duplicados y baja para niveles, materias, deportes y recorridos | Aplicada |
 | Sin versión empaquetada | Generar un `.zip` desplegable por cada merge a `main` (gestión de artefactos) | Aplicada |
-| PR enormes y sin revisión | Regla de PR chicos y "CI en verde para mergear" en CONTRIBUTING y en la plantilla de PR | Aplicada |
-| Despliegue pendiente | Conectar Railway a `main` con *Wait for CI* | Pendiente: requiere la cuenta de Railway |
+| PR enormes y sin revisión | Regla de PR chicos y "CI en verde para mergear" en CONTRIBUTING y en la plantilla de PR | Aplicada a medias: el tamaño bajó (ver la comparativa), pero sigue sin haber revisiones registradas (NC-01). Se sumaron `CODEOWNERS` y un checklist para quien revisa |
+| Despliegue pendiente | Conectar Railway a `main` con *Wait for CI* | Pendiente: requiere la cuenta de Railway. Ya está lista la verificación de producción (`/up`), que se activa al cargar `URL_PRODUCCION` |
+| Lock de Composer desfasado y sin chequeo de vulnerabilidades | `composer validate` y `composer audit` en el CI, más Dependabot semanal | Implementada el 24/10; se confirma en la primera corrida tras el merge |
+| Paquete `.zip` sin verificar | Etapa *Verify*: comprueba que el paquete tenga lo necesario y no incluya `.env`, tests ni dependencias de desarrollo | Implementada el 24/10 (probada contra el `.zip` real del CI); se confirma en el CI tras el merge |
+| Fallos que nadie ve | Job *Notify*: abre un issue `no-conformidad` si falla `main` | Implementada el 24/10; se demuestra con la casilla `simular_fallo` |
 | Tablero desactualizado | Mover las tarjetas de issues cerrados a *Hecho* y activar en el Project el workflow *Item closed → Hecho* | Tarjetas movidas (50 cerrados en *Hecho*, 8 abiertos en *Por hacer*). El workflow se activa desde la configuración del Project |
 
 ## Resultados del CI y segunda mejora
@@ -73,14 +76,18 @@ Punto 4 de la Parte 2 del TP de la Unidad 4. Medido el 21/10/2026.
 | Indicador | Antes | Después |
 |---|---|---|
 | Verificación de cada cambio | Manual, si alguien se acordaba de correr los tests | Automática en cada push y PR |
-| Etapas automatizadas | 0 | 4 (build, lint, test, package) |
+| Corridas de CI | 0 | 11 al 24/10: 9 verdes y 2 rojas (el mismo commit, una por `push` y otra por `pull_request`) |
+| Etapas automatizadas | 0 | 4 medidas el 22/10 (build, lint, test, package). Desde el 24/10, 7: se suman la auditoría de dependencias, la verificación del paquete y la notificación (y `composer validate` dentro del build) |
 | Lint | Manual | Automático, bloquea el CI si falla |
-| Errores ocultos detectados | 0 (el warning de PHPUnit pasaba desapercibido) | 1 detectado y corregido en la primera corrida |
+| Errores ocultos detectados | 0 (el warning de PHPUnit pasaba desapercibido) | 2: el warning de PHPUnit (corregido en la primera corrida) y un `composer.lock` desfasado desde el 22/09, que el log del CI avisaba y nadie leyó (corregido el 24/10) |
+| Tamaño del PR | 153 archivos, +16.517 líneas (#59) | 10 archivos, +434 líneas (#61) |
+| Tiempo abierto → mergeado | #59: 1 min 38 s, sin ninguna verificación | #61: 18 min 6 s, con el CI en verde antes de mergear |
+| Revisiones registradas en PR | 0 de 2 | 0 de 3 (sin mejora: NC-01 en [calidad.md](calidad.md)) |
 | Tests | 50 tests, 250 verificaciones | 56 tests, 302 verificaciones |
 | Cobertura de líneas | No medida (76,6 % al medirla) | 83,6 % |
 | Cobertura de métodos | No medida (61,3 % al medirla) | 75,7 % |
-| Duración del pipeline | No existía | 23 a 31 s (build 7–11 s, lint 2–4 s, tests 3–5 s) |
+| Duración del pipeline | No existía | 26 a 51 s por corrida, promedio de 33 s sobre las 9 corridas verdes (la de 51 s incluye el paquete en `main`). Fuente: `gh run list` |
 | Artefactos por versión | Ninguno | Reporte de tests + cobertura (14 días) y paquete `.zip` (30 días) |
 | Aviso de fallos | Ninguno | Correo de GitHub y cruz roja en el PR |
-| Requisito para mergear | Solo los tests locales | Tests locales + CI en verde + PR chico |
+| Requisito para mergear | Solo los tests locales | Tests locales + CI en verde + PR chico, como convención de CONTRIBUTING. `main` sigue sin protección de rama por el plan de GitHub (NC-03), así que nada lo obliga |
 | Tablero Kanban | 49 de 50 issues cerrados fuera de *Hecho* | 50 de 50 en *Hecho* |
