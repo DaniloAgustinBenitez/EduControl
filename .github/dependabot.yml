@@ -1,0 +1,25 @@
+# Actualización automática de dependencias. Dependabot abre un PR por semana con las
+# actualizaciones menores y de parches agrupadas; el CI lo valida como cualquier otro PR.
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      dependencias-php:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "chore(ci)"
