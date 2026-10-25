@@ -76,12 +76,15 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 - [Pruebas por rol y de diseño responsivo](docs/pruebas.md)
 - [Integración y entrega continua (pipeline de GitHub Actions)](docs/ci-cd.md)
 - [Métricas de productividad y mejoras](docs/metricas.md)
+- [Unidad 4: contenidos aplicados y no aplicados, y opciones elegidas](docs/unidad-4.md)
+- [Calidad del software: FURPS+, SQA/SQC y registro de no conformidades](docs/calidad.md)
 - [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
 - [Correcciones a aplicar en el Plan de Trabajo](docs/correcciones-plan.md)
 
 ## Estructura principal
 
 ```
+.github/                Pipeline de CI, Dependabot, CODEOWNERS y plantillas de PR e issues
 app/
   Http/Controllers/     ABM, autogestión, docente y reportes
   Services/             InscripcionService (reglas RN), SuperposicionHoraria, ReporteService, CuentaService
@@ -93,3 +96,7 @@ database/
 resources/views/        Vistas Blade (layout con Bootstrap 5 + DataTables)
 tests/                  Tests unitarios y de integración
 ```
+
+## Licencia
+
+MIT. Ver [LICENSE](LICENSE).

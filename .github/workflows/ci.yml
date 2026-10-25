@@ -1,5 +1,6 @@
 # Pipeline de integración continua de EduControl.
-# Etapas: Build (dependencias) → Lint (Pint) → Test (PHPUnit + cobertura) → Package (solo en main).
+# Etapas: Build (validar + dependencias) → Seguridad (composer audit) → Lint (Pint) → Test (PHPUnit + cobertura)
+#         → Package + Verify (solo en main) → Verify de producción (si hay URL cargada) → Notify (issue si falla main).
 # Explicación completa en docs/ci-cd.md.
 name: CI
 
@@ -8,6 +9,15 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      simular_fallo:
+        description: 'Forzar un fallo para demostrar la notificación (abre un issue de no conformidad)'
+        type: boolean
+        default: false
+
+# El token del pipeline solo puede leer el código; el job de notificación pide además permiso para issues.
+permissions:
+  contents: read
 
 # Si llega un push nuevo a la misma rama, se cancela la corrida anterior.
 concurrency:
@@ -47,8 +57,14 @@ jobs:
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
 
+      - name: Build - validar composer.json y composer.lock
+        run: composer validate --no-interaction
+
       - name: Build - instalar dependencias
         run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Seguridad - vulnerabilidades conocidas en las dependencias
+        run: composer audit --no-interaction
 
       - name: Preparar el entorno (.env y APP_KEY)
         run: |
@@ -57,6 +73,12 @@ jobs:
 
       - name: Lint - estilo de código con Pint
         run: vendor/bin/pint --test
+
+      - name: Simular un fallo (solo en la demostración manual)
+        if: github.event_name == 'workflow_dispatch' && inputs.simular_fallo
+        run: |
+          echo "::error::Fallo simulado para demostrar la notificación"
+          exit 1
 
       - name: Test - PHPUnit con cobertura
         run: |
@@ -119,9 +141,87 @@ jobs:
           cd ..
           zip -qr "educontrol-${GITHUB_SHA::7}.zip" educontrol
 
+      - name: Verify - comprobar el contenido del paquete
+        run: |
+          listado=$(unzip -Z1 dist/*.zip)
+          problemas=0
+          for requerido in educontrol/artisan educontrol/composer.json educontrol/public/index.php educontrol/vendor/autoload.php; do
+            if ! echo "$listado" | grep -qx "$requerido"; then
+              echo "::error::Falta $requerido en el paquete"
+              problemas=1
+            fi
+          done
+          for prohibido in '^educontrol/\.env$' '^educontrol/tests/' '^educontrol/phpunit\.xml$' '^educontrol/vendor/phpunit/'; do
+            if echo "$listado" | grep -qE "$prohibido"; then
+              echo "::error::El paquete incluye archivos que no deben ir ($prohibido)"
+              problemas=1
+            fi
+          done
+          if [ "$problemas" -eq 0 ]; then
+            echo "Paquete verificado: $(echo "$listado" | wc -l) entradas, sin .env, sin tests y sin dependencias de desarrollo."
+          fi
+          exit "$problemas"
+
       - name: Guardar el paquete como artefacto
         uses: actions/upload-artifact@v4
         with:
           name: educontrol-${{ github.sha }}
           path: dist/*.zip
           retention-days: 30
+
+  # Se activa solo cuando se carga la variable de repositorio URL_PRODUCCION
+  # (Settings → Secrets and variables → Actions → Variables). Ver docs/ci-cd.md.
+  verificar-produccion:
+    name: Verify - la aplicación en producción responde
+    needs: paquete
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.URL_PRODUCCION != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Esperar la respuesta 200 de /up
+        env:
+          URL: ${{ vars.URL_PRODUCCION }}
+        run: |
+          for intento in $(seq 1 20); do
+            codigo=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "${URL%/}/up" || true)
+            echo "Intento $intento: HTTP $codigo"
+            if [ "$codigo" = "200" ]; then
+              exit 0
+            fi
+            sleep 15
+          done
+          echo "::error::La aplicación no respondió 200 en ${URL%/}/up"
+          exit 1
+
+  notificar:
+    name: Notify - registrar la falla como no conformidad
+    needs: [pruebas, paquete, verificar-produccion]
+    if: always() && contains(needs.*.result, 'failure') && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+
+    steps:
+      - name: Abrir el issue de no conformidad
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          CORRIDA: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          RAMA: ${{ github.ref_name }}
+          COMMIT: ${{ github.sha }}
+          AUTOR: ${{ github.actor }}
+        run: |
+          gh label create no-conformidad --color B60205 --description "Incumplimiento de un estándar o proceso del proyecto" 2>/dev/null || true
+          {
+            echo "El pipeline falló y no se cumple el estándar \"CI en verde\" de CONTRIBUTING.md."
+            echo
+            echo "- **Rama:** \`${RAMA}\`"
+            echo "- **Commit:** \`${COMMIT}\`"
+            echo "- **Disparado por:** @${AUTOR}"
+            echo "- **Corrida:** ${CORRIDA}"
+            echo
+            echo "Acción correctiva: revisar el log de la corrida, corregir y volver a correr el CI. Cerrar este issue cuando \`main\` vuelva a estar en verde."
+          } > cuerpo.md
+          gh issue create --title "CI fallido en ${RAMA} (${COMMIT::7})" --label no-conformidad --body-file cuerpo.md
