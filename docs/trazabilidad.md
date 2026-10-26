@@ -37,7 +37,7 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 | RNF-03 HTTPS | `URL::forceScheme('https')` en producción + `trustProxies` | Pendiente de verificar en producción |
 | RNF-04 Sin duplicados, datos al día | Índices únicos en las 4 tablas de inscripción; base única | `InscripcionServiceTest` |
 | RNF-05 Errores en lenguaje claro | `lang/es/validation.php` con nombres de campo en español | `RequerimientosTest::test_rnf05_*` |
-| RNF-06 Responsive y multinavegador | Bootstrap 5, menú lateral que colapsa, DataTables Responsive | Checklist manual en `pruebas.md` |
+| RNF-06 Responsive y multinavegador | Bootstrap 5, menú lateral que colapsa, DataTables Responsive, campos de 16 px en celulares | Pruebas del 26/10 en `pruebas.md` (Edge, escritorio y celular). Falta Firefox y Safari |
 | RNF-07 Menos de 3 segundos | Medido con 3000 alumnos: el reporte más pesado, 0,9 s | `php artisan reportes:medir`, tabla en `pruebas.md` |
 | RNF-08 Disponibilidad | Depende del despliegue | Pendiente (Railway) |
 | RNF-09 Respaldo y restauración | `db:respaldar` / `db:restaurar` | Prueba documentada en `respaldos.md` |

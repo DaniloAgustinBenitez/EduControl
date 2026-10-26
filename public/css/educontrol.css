@@ -290,3 +290,13 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 div.dt-container .dt-search input,
 div.dt-container .dt-length select { border-radius: .5rem; border: 1px solid var(--ec-borde); }
 div.dt-container .dt-paging .dt-paging-button.current { border-radius: .45rem; }
+
+/* ---------- Celular ---------- */
+
+/* iOS Safari agranda la pantalla al tocar un campo de menos de 16 px (RNF-06). */
+@media (max-width: 575.98px) {
+    .form-control-sm,
+    .form-select-sm,
+    div.dt-container .dt-search input,
+    div.dt-container .dt-length select { font-size: 1rem; }
+}
