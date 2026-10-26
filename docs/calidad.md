@@ -7,7 +7,7 @@ Cómo el proyecto aplica el material de *Aseguramiento de la calidad del softwar
 | Atributo | Qué exige el sistema | Evidencia | Estado |
 |---|---|---|---|
 | **F**uncionalidad | 24 requerimientos funcionales, 7 reglas de negocio, 9 historias de usuario | [trazabilidad.md](trazabilidad.md): cada RF/RN con su código y su test. 56 tests, 302 verificaciones | Cumplido |
-| **U**sabilidad | Interfaz clara, errores en español, uso en celular (RNF-05, RNF-06) | Mensajes en `lang/es`, Bootstrap 5 responsive. Las pruebas manuales por rol y de diseño responsivo (issues #56 y #57) **todavía no se ejecutaron** | Parcial |
+| **U**sabilidad | Interfaz clara, errores en español, uso en celular (RNF-05, RNF-06) | Mensajes en `lang/es`, Bootstrap 5 responsive. Pruebas por rol y de diseño responsivo ejecutadas el 26/10: 53 de 53 pasos OK ([pruebas.md](pruebas.md)). Falta probar en Firefox y Safari | Cumplido, salvo multinavegador |
 | **R**eliability (fiabilidad) | Sin duplicados, respaldo y restauración (RNF-04, RNF-09) | Índices únicos en las inscripciones, `db:respaldar` y `db:restaurar` ([respaldos.md](respaldos.md)), CI en cada cambio | Cumplido |
 | **P**erformance | Reportes en menos de 3 segundos (RNF-07) | Medido con 3003 alumnos: el peor caso, 0,94 s ([pruebas.md](pruebas.md)) | Cumplido |
 | **S**oporte | Mantenible y configurable | Capas separadas (RNF-10), documentación en `docs/`, convenciones en [CONTRIBUTING](../CONTRIBUTING.md), Dependabot para dependencias | Cumplido |
@@ -36,15 +36,16 @@ El apunte muestra que corregir un error cuesta de 15 a 40 veces más en las prue
 
 ## Registro de no conformidades
 
-Una **no conformidad** es el incumplimiento de un estándar o proceso del proyecto. Se registran como issues con la etiqueta `no-conformidad` (plantilla en `.github/ISSUE_TEMPLATE`), y el CI abre uno solo si falla `main`. Esta tabla resume las detectadas en la auditoría del 24/10/2026.
+Una **no conformidad** es el incumplimiento de un estándar o proceso del proyecto. Se registran como issues con la etiqueta `no-conformidad` (plantilla en `.github/ISSUE_TEMPLATE`), y el CI abre uno solo si falla `main`. Se comprobó el 26/10 con una falla simulada: el CI abrió el issue #68, que se cerró por ser un ensayo. Esta tabla resume las detectadas en la auditoría del 24/10/2026, actualizada el 26/10/2026.
 
 | Id | No conformidad | Dónde se detectó | Estado | Acción |
 |---|---|---|---|---|
-| NC-01 | Los PR #59, #60 y #61 se mergearon sin revisión cruzada | CONTRIBUTING, PR punto 4. `gh pr view`: 0 revisiones | **Abierta** | `CODEOWNERS` y checklist de revisor ya en el repo. Falta que el otro integrante revise el próximo PR |
-| NC-02 | Los PR se mergearon con *Merge commit*, no con *Squash and merge* | CONTRIBUTING, PR punto 5 | **Abierta** | En *Settings → General → Pull Requests* dejar habilitado solo *Squash merging* |
+| NC-01 | Los PR #59, #60, #61 y #64 se mergearon sin revisión cruzada | CONTRIBUTING, PR punto 4. `gh pr view`: 0 revisiones | **Abierta** | `CODEOWNERS` y checklist de revisor activos desde el #64. Los PR de Dependabot (#65, #66 y #67) esperan la revisión del otro integrante |
+| NC-02 | Los PR se mergearon con *Merge commit*, no con *Squash and merge* (también el #64) | CONTRIBUTING, PR punto 5 | **Abierta** | En *Settings → General → Pull Requests* dejar habilitado solo *Squash merging* |
 | NC-03 | `main` sin protección de rama | Issue #3 | **Abierta** | Limitación del plan (GitHub pide Pro o repo público). Mitigación: CI, plantilla y `CODEOWNERS` |
 | NC-04 | `composer.lock` desfasado de `composer.json` desde el renombrado del 22/09 | Aviso en el log del CI del 22/10 que nadie atendió | Cerrada 24/10 | `composer update --lock` (sin cambiar versiones). Ahora `composer validate` frena el build si vuelve a pasar |
 | NC-05 | Warning de PHPUnit en `AccesoPorRolTest` | Primera corrida del CI, 22/10 | Cerrada 22/10 | Data provider propio (commit `343ba93`) |
 | NC-06 | La documentación mostraba como aplicados el despliegue y la regla de merge, sin estarlo | Auditoría del 24/10 | Cerrada 24/10 | Textos corregidos en [ci-cd.md](ci-cd.md) y [metricas.md](metricas.md) |
-| NC-07 | Pruebas manuales por rol y de diseño responsivo sin ejecutar | Issues #56 y #57; checklists vacías en [pruebas.md](pruebas.md) | **Abierta** | Ejecutarlas y marcar las casillas |
+| NC-07 | Pruebas por rol y de diseño responsivo sin ejecutar | Issues #56 y #57; checklists vacías en [pruebas.md](pruebas.md) | Cerrada 26/10, salvo multinavegador | Ejecutadas con Playwright: 53 de 53 OK. Quedan pendientes Firefox, Safari, el horario de un deporte y los filtros de reportes |
 | NC-08 | Sin archivo `LICENSE` aunque `composer.json` declara MIT | Auditoría del 24/10 | Cerrada 24/10 | Se agregó `LICENSE` |
+| NC-09 | El selector de deportes de la autogestión medía 14 px: en iPhone la pantalla se agranda al tocarlo (RNF-06) | Pruebas responsivas del 26/10 | Cerrada 26/10 | Regla en `public/css/educontrol.css` que lleva a 16 px los campos chicos en celulares |

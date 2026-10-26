@@ -1,8 +1,8 @@
 # Unidad 4: optimización del ciclo de desarrollo
 
-Parte 2 del trabajo práctico (coevaluación del 27/10/2026). Estado al 24/10/2026.
+Parte 2 del trabajo práctico (coevaluación del 27/10/2026). Estado al 26/10/2026.
 
-> Dependabot, `CODEOWNERS` y las plantillas de issues los lee GitHub desde `main`, así que quedan activos cuando el PR con estos cambios se mergea. El resto del pipeline corre en cualquier rama.
+> Todo lo de esta página está activo en `main` desde el merge del PR #64 (25/10/2026).
 
 **Tipo de optimización aplicada:** integración continua con gestión de artefactos, sobre **GitHub Actions**. Se eligió porque el código ya vive en GitHub, no hace falta montar ni mantener un servidor de CI, el pipeline queda versionado junto al código (`.github/workflows/ci.yml`) y los resultados aparecen en cada pull request. El detalle técnico está en [ci-cd.md](ci-cd.md).
 
@@ -50,13 +50,14 @@ Se evaluaron cuatro mejoras posibles:
 
 - **Qué se hizo:** el CI corre `composer validate` (que el lock coincida con `composer.json`) y `composer audit` (falla si una dependencia tiene una vulnerabilidad publicada). [Dependabot](../.github/dependabot.yml) abre cada lunes un PR con las actualizaciones menores agrupadas.
 - **Por qué:** una dependencia vulnerable o un lock desfasado se descubrían tarde. De hecho, el log del CI ya mostraba un `composer.lock` desactualizado desde el renombrado del proyecto (NC-04), que se corrigió con esta mejora.
-- **Resultado:** `composer audit` sin vulnerabilidades al 24/10/2026; `composer validate` pasa.
+- **Resultado:** `composer validate` y `composer audit` pasan en el CI de `main`. El 25/10 Dependabot abrió sus primeros 3 PR (Laravel 13.38, `actions/cache` v6 y `actions/upload-artifact` v7), los tres en verde.
 
 ### Opción 2: notificación y registro automático de fallos
 
 - **Qué se hizo:** si el CI falla en `main`, el job `notificar` abre un issue con la etiqueta `no-conformidad`, el commit, el autor y el link a la corrida. Hay plantillas de issue para registrar a mano otras no conformidades, y la tabla resumen está en [calidad.md](calidad.md).
 - **Por qué:** hasta ahora el aviso dependía del correo de cada persona. Con el issue, el fallo queda en el tablero hasta que alguien lo cierre, que es lo que pide el material de calidad (registrar las no conformidades en el sistema de incidencias).
 - **Cómo demostrarlo:** *Actions → CI → Run workflow* con `simular_fallo` tildado. El pipeline falla a propósito y se abre el issue.
+- **Resultado:** el ensayo del 26/10 abrió solo el issue [#68](https://github.com/DaniloAgustinBenitez/EduControl/issues/68) con la rama, el commit, el autor y el link a la corrida. Se cerró por ser una prueba.
 
 ## 4. Métricas de productividad
 
@@ -67,7 +68,8 @@ Herramientas, mediciones antes y después, estrategias y la tabla comparativa es
 | Tamaño del PR | 153 archivos, +16.517 líneas (#59) | 10 archivos, +434 líneas (#61) |
 | Verificación de cada cambio | Manual | Automática en cada push y PR |
 | Cobertura de líneas | No medida | 83,6 % |
-| Corridas de CI | 0 | 11, de las que 9 pasaron y 2 fallaron por el mismo commit |
+| Corridas de CI | 0 | 21 al 26/10: 18 verdes y 3 rojas (dos por el mismo commit y una del ensayo de *Notify*) |
+| Pruebas por rol y responsivas | Sin ejecutar | 53 de 53 pasos OK |
 
 ## Qué falta
 
@@ -75,5 +77,5 @@ Herramientas, mediciones antes y después, estrategias y la tabla comparativa es
 |---|---|
 | Despliegue Continuo | Crear la cuenta de Railway, conectar `main` con *Wait for CI* y cargar `URL_PRODUCCION` |
 | Wiki | Decidir si se pasa el repositorio a público o se mantiene `docs/` |
-| Revisión cruzada de PR (NC-01) | Que el otro integrante revise el próximo PR |
-| Pruebas manuales por rol y responsivas (NC-07) | Ejecutar las checklists de [pruebas.md](pruebas.md) |
+| Revisión cruzada de PR (NC-01) | Que el otro integrante revise los PR de Dependabot (#65, #66 y #67) antes de mergearlos |
+| Pruebas en Firefox y Safari | Repetir la checklist de [pruebas.md](pruebas.md) en esos navegadores |
