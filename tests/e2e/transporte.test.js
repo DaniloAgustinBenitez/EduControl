@@ -1,7 +1,7 @@
 // Caso de prueba CP-TR-01: inscripción al transporte con un único recorrido (RF-11, RN-06, HU7).
 import assert from 'node:assert/strict';
 import { after, before, test } from 'node:test';
-import { BASE, By, abrirNavegador, aviso, clic, enviar, ingresar, tarjeta } from './apoyo.js';
+import { BASE, By, abrirNavegador, aviso, elegir, enviar, ingresar, tarjeta } from './apoyo.js';
 
 const SOFIA = `${BASE}/autogestion/alumnos/1`;
 let driver;
@@ -40,7 +40,7 @@ test('CP-TR-01 paso 1: el transporte figura sin inscribir y ofrece los recorrido
 });
 
 test('CP-TR-01 paso 2: inscribe a Sofía al recorrido Norte', async () => {
-    await clic(driver, await driver.findElement(By.id(`rec${norte}`)));
+    await elegir(driver, await driver.findElement(By.id(`rec${norte}`)));
     await enviar(driver, await driver.findElement(By.xpath("//button[normalize-space()='Inscribir al recorrido']")));
 
     const { exito, error } = await aviso(driver);
@@ -79,7 +79,7 @@ test('CP-TR-01 paso 5: después de la baja puede elegir otro recorrido', async (
     await darDeBajaElTransporte();
     assert.equal(await (await tarjeta(driver, 'Transporte')).findElement(By.css('.ec-pill')).getText(), 'Sin inscribir');
 
-    await clic(driver, await driver.findElement(By.id(`rec${sur}`)));
+    await elegir(driver, await driver.findElement(By.id(`rec${sur}`)));
     await enviar(driver, await driver.findElement(By.xpath("//button[normalize-space()='Inscribir al recorrido']")));
     assert.match(await (await tarjeta(driver, 'Transporte')).getText(), /Recorrido Sur/);
 

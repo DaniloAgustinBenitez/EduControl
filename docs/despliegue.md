@@ -20,7 +20,7 @@ La configuración ya está en el repositorio:
 ### 1. Base de datos en Aiven
 
 1. Entrá a [aiven.io](https://aiven.io) y creá una cuenta (sirve la de GitHub o Google).
-2. **Create service → MySQL → plan Free**. Elegí una región de Estados Unidos (este), cerca de la de Render.
+2. **Create service → MySQL → plan Free**. Anotá la región: la de Render tiene que ser la más cercana (la nuestra quedó en California, así que en Render va Oregon).
 3. Esperá a que el servicio quede en **Running** y, en **Overview → Connection information**, copiá *Host*, *Port*, *User*, *Password* y *Database name* (`defaultdb`).
 4. En la misma pantalla, en **CA certificate**, tocá **Show** y copiá todo el texto, desde `-----BEGIN CERTIFICATE-----` hasta `-----END CERTIFICATE-----`.
 
@@ -47,6 +47,8 @@ Copiá el resultado completo (empieza con `base64:`). No lo subas al repositorio
 | `DB_SSL_CA_PEM` | El texto completo del certificado de Aiven |
 
 3. **Apply**. El primer despliegue tarda unos minutos: en **Logs** se ve la construcción de la imagen, las migraciones y el arranque de Apache.
+
+**Sin Blueprint (New → Web Service):** se llega a lo mismo completando el formulario a mano. *Language*: **Docker** (no Node: Render se confunde por el `package.json`); *Branch*: `main`; *Region*: la más cercana a Aiven; *Instance Type*: **Free**; *Root Directory*, *Dockerfile Path* y *Docker Command*: por defecto. En **Environment Variables**, **Add from .env** acepta pegar todas las variables juntas; `DB_SSL_CA_PEM` conviene cargarla aparte con **Add Environment Variable**, porque ocupa varias líneas. En **Advanced**: *Health Check Path* `/up` y *Auto-Deploy* **After CI Checks Pass**.
 4. Abrí la URL del servicio y entrá con `admin@educontrol.test` / `password`.
 
 ### 4. Después del primer despliegue

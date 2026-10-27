@@ -5,7 +5,8 @@ services:
     name: educontrol
     runtime: docker
     plan: free
-    region: virginia
+    # La base de Aiven está en California: Oregon es la región de Render más cercana.
+    region: oregon
     branch: main
     healthCheckPath: /up
     # Despliegue continuo: Render publica main solo cuando el CI de GitHub Actions pasa.

@@ -14,13 +14,21 @@ const ESPERA = 10000;
 export const ESCRITORIO = { ancho: 1366, alto: 850 };
 export const CELULAR = { ancho: 390, alto: 844 };
 
+// Sin gestor de contraseñas: después de ingresar con la clave de prueba ("password"), Chrome abre el aviso
+// de contraseña filtrada por encima de la página y los clics no le llegan a la aplicación.
+const PREFERENCIAS = {
+    credentials_enable_service: false,
+    'profile.password_manager_enabled': false,
+    'profile.password_manager_leak_detection': false,
+};
+
 export async function abrirNavegador({ ancho, alto } = ESCRITORIO) {
-    const argumentos = ['--headless=new', `--window-size=${ancho},${alto}`, '--lang=es-AR'];
+    const argumentos = ['--headless=new', `--window-size=${ancho},${alto}`, '--lang=es-AR', '--disable-features=PasswordLeakDetection'];
     const builder = new Builder().forBrowser(NAVEGADOR);
     if (NAVEGADOR === 'chrome') {
-        builder.setChromeOptions(new chrome.Options().addArguments(...argumentos, '--no-sandbox'));
+        builder.setChromeOptions(new chrome.Options().addArguments(...argumentos, '--no-sandbox').setUserPreferences(PREFERENCIAS));
     } else {
-        builder.setEdgeOptions(new edge.Options().addArguments(...argumentos));
+        builder.setEdgeOptions(new edge.Options().addArguments(...argumentos).setUserPreferences(PREFERENCIAS));
     }
     return builder.build();
 }
@@ -44,6 +52,14 @@ export async function ingresar(driver, email) {
 export async function clic(driver, elemento) {
     await driver.executeScript("arguments[0].scrollIntoView({ block: 'center', behavior: 'instant' })", elemento);
     await elemento.click();
+}
+
+// Marca un radio o checkbox y comprueba que quedó marcado.
+export async function elegir(driver, opcion) {
+    await clic(driver, opcion);
+    if (!(await opcion.isSelected())) {
+        throw new Error('No se pudo marcar la opción: el clic no llegó a la página');
+    }
 }
 
 // Hace clic y espera a que cargue la página siguiente.
