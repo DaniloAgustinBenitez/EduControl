@@ -1,0 +1,46 @@
+# Blueprint de Render: la aplicación en el plan gratis. La base MySQL está en Aiven.
+# Guía paso a paso en docs/despliegue.md.
+services:
+  - type: web
+    name: educontrol
+    runtime: docker
+    plan: free
+    region: virginia
+    branch: main
+    healthCheckPath: /up
+    # Despliegue continuo: Render publica main solo cuando el CI de GitHub Actions pasa.
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_NAME
+        value: EduControl
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_LOCALE
+        value: es
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: DB_CONNECTION
+        value: mysql
+      - key: SEMBRAR_DATOS
+        value: "true"
+      # Se completan en el panel de Render al crear el servicio.
+      - key: APP_KEY
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        sync: false
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL_CA_PEM
+        sync: false
