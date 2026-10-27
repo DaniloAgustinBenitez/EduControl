@@ -1,0 +1,17 @@
+{
+    "[php]": {
+        "editor.defaultFormatter": "open-southeners.laravel-pint",
+        "editor.formatOnSave": true
+    },
+    "laravel-pint.enable": true,
+    "php.validate.enable": false,
+    "intelephense.diagnostics.enable": true,
+    "intelephense.files.exclude": [
+        "**/.git/**",
+        "**/node_modules/**",
+        "**/storage/**",
+        "**/bootstrap/cache/**"
+    ],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
+}

@@ -31,9 +31,14 @@ refactor(alumnos): mover validación a InscripcionService
 
 Tipos: `feat`, `fix`, `docs`, `test`, `refactor`, `chore`. Cuando aplique, citar el RF/RN/HU entre paréntesis y cerrar el issue en el cuerpo con `Closes #N`.
 
+## Editor y pre-commit
+
+- **VS Code:** al abrir el proyecto, aceptá las extensiones recomendadas (`.vscode/extensions.json`): Intelephense marca los errores de PHP mientras escribís y Laravel Pint formatea el archivo al guardar. Pint necesita PHP en el PATH (en Laragon: *Menú → Tools → Path → Add Laragon to Path*).
+- **Pre-commit (Husky):** después de clonar, corré una vez `npm install` y `npm run prepare`. Desde ahí, cada `git commit` revisa los archivos PHP agregados con `php -l` (sintaxis) y Pint (estilo), y si algo falla el commit no se hace. Se corrige con `php vendor/bin/pint` y se vuelve a commitear.
+
 ## Pull requests
 
-1. Antes de abrir el PR: `php artisan test` y `vendor/bin/pint --test` en verde.
+1. Antes de abrir el PR: `php artisan test` y `vendor/bin/pint --test` en verde. Si el cambio toca pantallas, también `npm run test:e2e` con la app levantada (ver [docs/pruebas.md](docs/pruebas.md)).
 2. Título igual al commit principal. Completar la plantilla (qué cambia, cómo probarlo, issues que cierra).
 3. **CI en verde:** el pipeline de GitHub Actions ([docs/ci-cd.md](docs/ci-cd.md)) tiene que pasar. Con la cruz roja no se mergea.
 4. **Revisión cruzada:** el otro integrante revisa y aprueba antes de mergear (`CODEOWNERS` se la pide automáticamente). Quien revisa completa su parte del checklist de la plantilla. Si se trabaja solo, se revisa el diff completo en GitHub antes de mergear.
