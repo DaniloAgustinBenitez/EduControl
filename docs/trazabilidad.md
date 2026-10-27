@@ -34,12 +34,12 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 |---|---|---|
 | RNF-01 Acceso por rol | Middleware `permission` en todas las rutas, `AlumnoPolicy` para el tutor | `AccesoPorRolTest`, incluidas pruebas por URL directa |
 | RNF-02 Contraseñas hasheadas | Cast `hashed` en `User` (bcrypt) | `AccesoPorRolTest::test_las_contrasenas_se_guardan_hasheadas` |
-| RNF-03 HTTPS | `URL::forceScheme('https')` en producción + `trustProxies` | Pendiente de verificar en producción |
+| RNF-03 HTTPS | `URL::forceScheme('https')` en producción + `trustProxies` | Verificado el 27/10/2026 en https://educontrol-5btq.onrender.com: `http://` redirige con 301 a `https://`, y la conexión con la base (Aiven) también va cifrada |
 | RNF-04 Sin duplicados, datos al día | Índices únicos en las 4 tablas de inscripción; base única | `InscripcionServiceTest` |
 | RNF-05 Errores en lenguaje claro | `lang/es/validation.php` con nombres de campo en español | `RequerimientosTest::test_rnf05_*` |
 | RNF-06 Responsive y multinavegador | Bootstrap 5, menú lateral que colapsa, DataTables Responsive, campos de 16 px en celulares | Pruebas del 26/10 en `pruebas.md` (Edge, escritorio y celular). Falta Firefox y Safari |
 | RNF-07 Menos de 3 segundos | Medido con 3000 alumnos: el reporte más pesado, 0,9 s | `php artisan reportes:medir`, tabla en `pruebas.md` |
-| RNF-08 Disponibilidad | Depende del despliegue | Pendiente (Render + Aiven, ver `despliegue.md`) |
+| RNF-08 Disponibilidad | Render con chequeo de salud en `/up` y verificación desde el CI después de cada merge | Publicada desde el 27/10/2026. Limitación del plan gratis: se apaga a los 15 minutos sin uso y tarda hasta un minuto en volver |
 | RNF-09 Respaldo y restauración | `db:respaldar` / `db:restaurar` | Prueba documentada en `respaldos.md` |
 | RNF-10 Capas separadas | Controladores (presentación) → Services (negocio) → Eloquent (datos) | Las reglas viven solo en `app/Services` |
 
@@ -73,7 +73,7 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 
 | Tema | Detalle |
 |---|---|
-| Despliegue (Objetivo Específico 4, RNF-03, RNF-08) | Falta crear la cuenta y publicar. Guía en `despliegue.md` |
+| Disponibilidad continua (RNF-08) | El plan gratis de Render se apaga sin uso; para tenerla siempre encendida hace falta el plan pago |
 | `main` protegida (sección 12.1) | GitHub exige plan Pro para repos privados |
 | Wireframes y mockup (sección 11) | No están en el repositorio |
 | Arquitectura, sección 9.5 | El plan menciona API REST/JSON; el sistema usa formularios con Blade. Ver `correcciones-plan.md` |

@@ -13,7 +13,7 @@ Cómo el proyecto aplica el material de *Aseguramiento de la calidad del softwar
 | **S**oporte | Mantenible y configurable | Capas separadas (RNF-10), documentación en `docs/`, convenciones en [CONTRIBUTING](../CONTRIBUTING.md), Dependabot para dependencias | Cumplido |
 | **+** Implementación | Laravel 13, PHP 8.3, MySQL 8 | `composer.json`, README | Cumplido |
 | **+** Interfaz | Sin sistemas externos; formularios Blade (ver [correcciones-plan.md](correcciones-plan.md)) | — | No aplica |
-| **+** Operaciones | Puesta en marcha y administración | [despliegue.md](despliegue.md), [respaldos.md](respaldos.md). Falta publicar en producción (RNF-03, RNF-08) | Parcial |
+| **+** Operaciones | Puesta en marcha y administración | Publicada en Render con la base en Aiven ([despliegue.md](despliegue.md)), despliegue automático cuando pasa el CI y verificación de `/up` después de cada merge; respaldos en [respaldos.md](respaldos.md). El plan gratis se apaga sin uso (RNF-08) | Cumplido, con la limitación del plan gratis |
 | **+** Empaquetamiento | Forma de distribución | `.zip` verificado en cada merge a `main` ([ci-cd.md](ci-cd.md)) | Cumplido |
 | **+** Legales | Licencia | [LICENSE](../LICENSE) (MIT, igual que `composer.json`) | Cumplido |
 
@@ -40,7 +40,7 @@ Una **no conformidad** es el incumplimiento de un estándar o proceso del proyec
 
 | Id | No conformidad | Dónde se detectó | Estado | Acción |
 |---|---|---|---|---|
-| NC-01 | Los PR #59, #60, #61 y #64 se mergearon sin revisión cruzada | CONTRIBUTING, PR punto 4. `gh pr view`: 0 revisiones | **Abierta** | `CODEOWNERS` y checklist de revisor activos desde el #64. Los PR de Dependabot (#65, #66 y #67) esperan la revisión del otro integrante |
+| NC-01 | Los PR #59, #60, #61, #64, #69, #70 y #71 se mergearon sin revisión cruzada (el #71, por decisión del equipo, para publicar el 27/10) | CONTRIBUTING, PR punto 4. `gh pr view`: 0 revisiones | **Abierta** | `CODEOWNERS` y checklist de revisor activos desde el #64. Los PR de Dependabot (#65, #66 y #67) esperan la revisión del otro integrante |
 | NC-02 | Los PR se mergearon con *Merge commit*, no con *Squash and merge* (también el #64) | CONTRIBUTING, PR punto 5 | **Abierta** | En *Settings → General → Pull Requests* dejar habilitado solo *Squash merging* |
 | NC-03 | `main` sin protección de rama | Issue #3 | **Abierta** | Limitación del plan (GitHub pide Pro o repo público). Mitigación: CI, plantilla y `CODEOWNERS` |
 | NC-04 | `composer.lock` desfasado de `composer.json` desde el renombrado del 22/09 | Aviso en el log del CI del 22/10 que nadie atendió | Cerrada 24/10 | `composer update --lock` (sin cambiar versiones). Ahora `composer validate` frena el build si vuelve a pasar |

@@ -2,7 +2,7 @@
 
 El pipeline está en [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) y corre en **GitHub Actions**. Los resultados se ven en la pestaña [Actions](https://github.com/DaniloAgustinBenitez/EduControl/actions) del repositorio.
 
-**Estado:** la integración continua y el empaquetado están en funcionamiento. El **despliegue continuo todavía no**: la configuración para Render ya está en el repositorio (`Dockerfile`, `render.yaml`), pero falta crear las cuentas de Render y Aiven (issues #6 y #53). Lo que ya está listo para cuando se conecte se explica más abajo.
+**Estado:** integración continua, empaquetado y **despliegue continuo** en funcionamiento desde el 27/10/2026. Cada merge a `main` con el CI en verde se publica en Render (https://educontrol-5btq.onrender.com), con la base MySQL en Aiven.
 
 ## Cuándo corre
 
@@ -10,7 +10,7 @@ El pipeline está en [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) y
 |---|---|
 | `push` a cualquier rama | Build, seguridad, lint y tests |
 | Pull request hacia `main` | Lo mismo (el resultado aparece en el PR) |
-| `push` a `main` (al mergear un PR) | Lo anterior **más** el paquete desplegable con su verificación |
+| `push` a `main` (al mergear un PR) | Lo anterior **más** el paquete desplegable con su verificación y la consulta a producción. Si todo pasa, Render publica la versión |
 | Manual (*Run workflow*) | Build, seguridad, lint y tests. Con la casilla `simular_fallo` fuerza un error para demostrar la notificación |
 
 Si llega un push nuevo a la misma rama mientras corre el anterior, la corrida vieja se cancela.
@@ -18,7 +18,7 @@ Si llega un push nuevo a la misma rama mientras corre el anterior, la corrida vi
 ## Etapas
 
 ```
-Commit → Build → Seguridad → Lint → Test (+ E2E en paralelo) → Package → Verify → (Deploy) → Notify
+Commit → Build → Seguridad → Lint → Test (+ E2E en paralelo) → Package → Verify → Deploy (Render) → Notify
 ```
 
 | Etapa | Paso del workflow | Herramienta | Estado |
@@ -30,8 +30,8 @@ Commit → Build → Seguridad → Lint → Test (+ E2E en paralelo) → Package
 | **E2E** | Levanta la app con los datos de prueba y corre las pruebas de navegador (caso CP-TR-01 y regresiones). En paralelo con el job de tests | Selenium WebDriver + Chrome | Activa |
 | **Package** | Arma `educontrol-<commit>.zip` sin tests ni dependencias de desarrollo. Solo en `main` | `git archive`, Composer `--no-dev` | Activa |
 | **Verify (paquete)** | Revisa el contenido del `.zip`: tiene `artisan`, `public/index.php` y `vendor/autoload.php`, y **no** tiene `.env`, `tests/` ni PHPUnit | Script del workflow | Activa |
-| **Deploy** | Render publica `main` cuando el CI pasa (ver "Conectar el despliegue") | Render + `Dockerfile` | **Pendiente** |
-| **Verify (producción)** | Consulta `/up` de la aplicación publicada hasta recibir 200 | `curl` | Lista; se activa al cargar `URL_PRODUCCION` |
+| **Deploy** | Render publica `main` cuando el CI pasa (ver "Conectar el despliegue") | Render + `Dockerfile` | Activa |
+| **Verify (producción)** | Consulta `/up` de la aplicación publicada hasta recibir 200 | `curl` | Activa (`URL_PRODUCCION` cargada) |
 | **Notify** | Si falla en `main`, abre un issue con la etiqueta `no-conformidad`. Además GitHub manda correo al autor y el PR muestra la cruz roja | `gh issue create` | Activa |
 
 ## Artefactos
@@ -54,7 +54,7 @@ Además, la página de cada corrida muestra un **resumen** con la cantidad de te
 | `DB_CONNECTION=sqlite`, `:memory:` | `phpunit.xml` | La base de los tests no toca MySQL |
 | `URL_PRODUCCION` | Variable del repositorio (*Settings → Secrets and variables → Actions → Variables*) | Activa la verificación de producción. Sin ella, ese job se omite |
 | `GITHUB_TOKEN` | Lo entrega GitHub en cada corrida | El workflow le deja solo `contents: read`. El job *Notify* suma `issues: write` |
-| Variables de producción (`APP_KEY`, `DB_*`, `DB_SSL_CA_PEM`, etc.) | Render (ver [despliegue.md](despliegue.md)) | Todavía sin cargar |
+| Variables de producción (`APP_KEY`, `DB_*`, `DB_SSL_CA_PEM`, etc.) | Render (ver [despliegue.md](despliegue.md)) | Cargadas en el servicio de Render; los valores no están en el repositorio |
 
 `.env` está en `.gitignore`: ninguna credencial entra al repositorio.
 

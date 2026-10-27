@@ -2,6 +2,8 @@
 
 Tareas 0.6 y 7.1. La opción gratis y sin vencimiento es **Render** para la aplicación y **Aiven** para la base MySQL. Railway queda como alternativa al final.
 
+**Estado:** publicada desde el 27/10/2026 en **https://educontrol-5btq.onrender.com** (Render en Oregon, base MySQL 8.4 de Aiven en California, conexión cifrada). Cada merge a `main` con el CI en verde se publica solo.
+
 | | Render + Aiven | Railway |
 |---|---|---|
 | Costo | Gratis, sin vencimiento | Prueba de US$ 5 por 30 días; después US$ 1 de crédito por mes, que no alcanza para la app y la base |

@@ -6,7 +6,8 @@ Sistema de gestión escolar: configuración institucional, gestión de alumnos, 
 
 Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**, con menú lateral, modo claro/oscuro y páginas de error propias. Los estilos del sistema están en `public/css/educontrol.css`.
 
-- **Producción:** _pendiente — ver [docs/despliegue.md](docs/despliegue.md)_
+- **Producción:** https://educontrol-5btq.onrender.com (Render, plan gratis: si nadie la usó en los últimos 15 minutos, la primera carga tarda hasta un minuto). Cómo se publica: [docs/despliegue.md](docs/despliegue.md)
+- **Manual de usuario:** [docs/manual-de-usuario.pdf](docs/manual-de-usuario.pdf)
 - **Tablero del proyecto:** https://github.com/users/DaniloAgustinBenitez/projects/2
 
 ## Perfiles
@@ -20,7 +21,7 @@ Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**, con men
 
 ### Usuarios de prueba
 
-Todos con contraseña `password` (se crean con `php artisan db:seed`):
+Todos con contraseña `password`. Existen en producción y en local (se crean con `php artisan db:seed`):
 
 | Rol | Correo |
 |---|---|
