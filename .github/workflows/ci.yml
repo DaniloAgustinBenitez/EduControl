@@ -1,5 +1,6 @@
 # Pipeline de integración continua de EduControl.
 # Etapas: Build (validar + dependencias) → Seguridad (composer audit) → Lint (Pint) → Test (PHPUnit + cobertura)
+#         y, en paralelo, E2E (Selenium sobre la app levantada)
 #         → Package + Verify (solo en main) → Verify de producción (si hay URL cargada) → Notify (issue si falla main).
 # Explicación completa en docs/ci-cd.md.
 name: CI
@@ -112,9 +113,59 @@ jobs:
           path: reportes/
           retention-days: 14
 
+  # Pruebas de navegador (caso de prueba CP-TR-01 y regresiones) con Selenium sobre Chrome.
+  e2e:
+    name: E2E - pruebas de navegador con Selenium
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ${{ github.workspace }}/database/e2e.sqlite
+      E2E_NAVEGADOR: chrome
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Instalar PHP ${{ env.PHP_VERSION }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+          tools: composer:v2
+
+      - name: Instalar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: |
+          composer install --no-interaction --no-progress --prefer-dist
+          npm ci
+
+      - name: Levantar la aplicación con los datos de prueba
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          touch "$DB_DATABASE"
+          php artisan migrate:fresh --seed --force
+          php artisan serve --host=127.0.0.1 --port=8000 > serve.log 2>&1 &
+          for intento in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8000/up > /dev/null && exit 0
+            sleep 1
+          done
+          cat serve.log
+          exit 1
+
+      - name: E2E - Selenium
+        run: npm run test:e2e
+
   paquete:
     name: Package - paquete desplegable
-    needs: pruebas
+    needs: [pruebas, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -196,7 +247,7 @@ jobs:
 
   notificar:
     name: Notify - registrar la falla como no conformidad
-    needs: [pruebas, paquete, verificar-produccion]
+    needs: [pruebas, e2e, paquete, verificar-produccion]
     if: always() && contains(needs.*.result, 'failure') && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     timeout-minutes: 5

@@ -10,7 +10,9 @@
 /.idea
 /.nova
 /.phpunit.cache
-/.vscode
+/.vscode/*
+!/.vscode/extensions.json
+!/.vscode/settings.json
 /.zed
 /auth.json
 /node_modules
@@ -18,6 +20,8 @@
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+/reportes
+/.scannerwork
 /storage/*.key
 /storage/pail
 /vendor

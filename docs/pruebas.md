@@ -17,6 +17,37 @@ php artisan test
 
 Los tests corren también en el CI en cada push, con reporte de cobertura (ver [ci-cd.md](ci-cd.md)).
 
+## Pruebas de navegador con Selenium
+
+Simulan a un usuario real en el navegador (Selenium WebDriver sobre Edge en local y Chrome en el CI). Están en `tests/e2e/` y corren en el CI en cada push, en el job *E2E*.
+
+```bash
+php artisan migrate:fresh --seed   # datos de prueba
+php artisan serve                  # en otra terminal
+npm run test:e2e                   # E2E_URL=http://... para otra dirección
+```
+
+| Archivo | Qué cubre |
+|---|---|
+| `tests/e2e/transporte.test.js` | Caso de prueba **CP-TR-01**: el tutor inscribe a Sofía a un recorrido, el sistema rechaza un segundo recorrido aunque se fuerce el envío (RN-06) y, después de la baja, permite elegir otro |
+| `tests/e2e/regresion.test.js` | Regresiones: campos de 16 px en el celular (NC-09) y el tutor sin acceso a la ficha de otro alumno (RN-07) |
+
+**Comprobación de la prueba de regresión (27/10/2026):** se quitó a propósito la regla de 16 px de `public/css/educontrol.css` y las dos pruebas de NC-09 fallaron, señalando los campos de 14 px (`deporte_id`, el buscador y el selector de cantidad de las tablas). Al restaurar la regla, volvieron a pasar.
+
+## Análisis estático con SonarQube
+
+`sonar-project.properties` define qué se analiza. Con Docker se puede levantar un SonarQube local:
+
+```bash
+docker run -d --name sonarqube -p 9000:9000 sonarqube:community
+# reportes/clover.xml y reportes/junit.xml: bajarlos del artefacto reportes-tests-<commit> del CI
+docker run --rm -e SONAR_HOST_URL=http://host.docker.internal:9000 -e SONAR_TOKEN=<token> -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli
+```
+
+Las rutas del `clover.xml` del CI empiezan con `/home/runner/work/EduControl/EduControl/`: hay que reemplazarlas por `/usr/src/` para que SonarQube encuentre los archivos.
+
+**Resultado del 27/10/2026** (SonarQube Community, 2609 líneas de código): *quality gate* aprobado, 0 bugs, 0 vulnerabilidades, 0 problemas de mantenibilidad (calificación A en seguridad, fiabilidad y mantenibilidad), 82,6 % de cobertura y 1,6 % de líneas duplicadas, todas en las migraciones.
+
 ## Rendimiento (6.7, RNF-07)
 
 Medido con 3003 alumnos cargados con `VolumenSeeder`, usando `php artisan reportes:medir` y peticiones HTTP reales:

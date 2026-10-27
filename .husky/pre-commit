@@ -1,0 +1,23 @@
+# Bloquea el commit si algún archivo PHP agregado tiene errores de sintaxis
+# o no respeta el estilo de Laravel (Pint). Es el mismo control que el Lint del CI.
+archivos=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
+[ -z "$archivos" ] && exit 0
+
+# PHP del PATH o, si no está, el de Laragon.
+php_bin=php
+if ! command -v php >/dev/null 2>&1; then
+  php_bin=$(ls -d /c/laragon/bin/php/php-*/php.exe 2>/dev/null | tail -n 1)
+fi
+if [ -z "$php_bin" ]; then
+  echo "pre-commit: no se encontró PHP. Agregalo al PATH o instalá Laragon."
+  exit 1
+fi
+
+for archivo in $archivos; do
+  salida=$("$php_bin" -l "$archivo" 2>&1) || { echo "$salida"; echo "pre-commit: error de sintaxis en $archivo"; exit 1; }
+done
+
+"$php_bin" vendor/bin/pint --test $archivos || {
+  echo "pre-commit: el estilo no respeta Pint. Corregilo con: php vendor/bin/pint"
+  exit 1
+}
