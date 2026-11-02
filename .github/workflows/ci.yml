@@ -107,7 +107,7 @@ jobs:
 
       - name: Guardar reportes de tests y cobertura
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: reportes-tests-${{ github.sha }}
           path: reportes/
@@ -214,7 +214,7 @@ jobs:
           exit "$problemas"
 
       - name: Guardar el paquete como artefacto
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: educontrol-${{ github.sha }}
           path: dist/*.zip
