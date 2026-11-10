@@ -45,5 +45,8 @@ yarn-error.*
 # variables de entorno (la plantilla es .env.example)
 .env
 
+# token de acceso de Expo para probar con Expo Go (lo lee probar-en-celular.ps1)
+.expo-token
+
 # reportes de Jest
 coverage/

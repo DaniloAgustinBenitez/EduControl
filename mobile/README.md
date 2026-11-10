@@ -91,7 +91,34 @@ La app **no tiene reglas de negocio**: si la API rechaza una inscripción (por e
 
 El tema arranca en **claro**, igual que la web, y se cambia con el botón de luna/sol de la barra superior; la elección queda guardada.
 
-## Cómo se corre
+## Probar en el celular (la forma más fácil)
+
+En Windows, **doble clic en [`probar-en-celular.cmd`](probar-en-celular.cmd)**. El script:
+
+1. Detecta la IP de la PC en el Wi-Fi.
+2. Prepara una base SQLite de prueba (`database/demo-mobile.sqlite`) con los usuarios y datos de siempre. No toca la base MySQL de Laragon.
+3. Abre la API en una ventana aparte, *EduControl API*, escuchando en la red.
+4. Arranca Expo apuntando a esa API y muestra el QR.
+
+Después, en el celular:
+
+1. Instalá o actualizá **Expo Go** desde Play Store o App Store. Tiene que ser la versión que soporta el SDK 58.
+2. Conectá el celular al **mismo Wi-Fi** que la PC.
+3. Android: en Expo Go tocá *Scan QR code*. iPhone: escaneá el QR con la cámara.
+4. Si el QR no anda: en Expo Go elegí *Enter URL manually* y escribí la dirección `exp://<IP>:8081` que muestra el script.
+5. Ingresá con `tutor@educontrol.test` o `docente@educontrol.test` (contraseña `password`). La checklist de qué probar está en [docs/pruebas.md](../docs/pruebas.md#checklist-en-celulares-m54).
+
+Opciones, desde una terminal en `mobile/`:
+
+| Comando | Qué hace |
+|---|---|
+| `.\probar-en-celular.cmd -Reiniciar` | Igual, pero deja los datos de prueba como nuevos |
+| `.\probar-en-celular.cmd -Web` | Abre la app en el navegador de la PC |
+| `.\probar-en-celular.cmd -Produccion` | Usa la API publicada en Render y no levanta Laravel |
+
+Para terminar: `Ctrl+C` en la ventana de Expo y cerrar la ventana *EduControl API*. Si el celular no conecta, revisá que los dos estén en la misma red. Algunas redes de invitados o de oficinas aíslan a los dispositivos entre sí.
+
+## Cómo se corre (a mano)
 
 Requisitos: Node 22.13 o superior y la app **Expo Go** en el celular (Android o iOS).
 

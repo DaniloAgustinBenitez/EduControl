@@ -207,7 +207,7 @@ Todos por debajo de los 3 s del RNF-07. Unos 0,4 s de cada pedido son el arranqu
 
 ### Checklist en celulares (M5.4)
 
-**Cómo correrla:** levantar la app con `cd mobile && npx expo start`, escanear el QR con Expo Go y repetir cada paso en un **Android** y, si hay, en un **iPhone**. La app puede apuntar a producción o al Laravel local (ver [mobile/README.md](../mobile/README.md)). Antes de empezar, reiniciar los datos con `php artisan migrate:fresh --seed` (en local).
+**Cómo correrla:** en Windows, `mobile\probar-en-celular.cmd -Reiniciar`. El script levanta la API local con datos de prueba nuevos y Expo con el QR. Escanear el QR con Expo Go y repetir cada paso en un **Android** y, si hay, en un **iPhone**. También puede apuntar a producción con `-Produccion` (ver [mobile/README.md](../mobile/README.md)).
 
 **Sesión**
 - [ ] Ingresar con una contraseña incorrecta: muestra "El correo o la contraseña no son correctos."
