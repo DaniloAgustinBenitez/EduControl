@@ -1,0 +1,23 @@
+meta {
+  name: Logout
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/logout
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Revoca el token usado en el pedido y responde 204 sin cuerpo. Después, Perfil responde 401.
+}

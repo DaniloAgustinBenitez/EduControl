@@ -13,6 +13,8 @@ use App\Models\InscripcionCursado;
 use App\Models\InscripcionDeporte;
 use App\Models\InscripcionTransporte;
 use App\Models\Recorrido;
+use App\Models\Tutor;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -137,6 +139,22 @@ class InscripcionService
             'transporte' => InscripcionTransporte::with('recorrido')->where($filtro)->first(),
             'deportes' => InscripcionDeporte::with('deporte.horarios')->where($filtro)->get(),
         ];
+    }
+
+    /**
+     * Hijos del tutor ordenados por nombre, cada uno con su estado en el ciclo (HU5).
+     * Lo usan la autogestión web y la API de la app; sin ciclo activo el estado es null.
+     *
+     * @return Collection<int, array{alumno: Alumno, estado: array|null}>
+     */
+    public function hijosConEstado(?Tutor $tutor, ?CicloLectivo $ciclo): Collection
+    {
+        $hijos = $tutor ? $tutor->alumnos()->with('curso.nivel')->orderBy('nombre')->get() : collect();
+
+        return $hijos->map(fn (Alumno $alumno) => [
+            'alumno' => $alumno,
+            'estado' => $ciclo ? $this->estado($alumno, $ciclo) : null,
+        ]);
     }
 
     /**

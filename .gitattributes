@@ -1,4 +1,7 @@
 * text=auto eol=lf
+# Scripts de Windows: cmd.exe y PowerShell esperan CRLF.
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
 
 *.blade.php diff=html
 *.css diff=css

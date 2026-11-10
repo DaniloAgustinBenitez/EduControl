@@ -26,13 +26,33 @@ Commit → Build → Seguridad → Lint → Test (+ E2E en paralelo) → Package
 | **Build** | `composer validate` (que `composer.json` y `composer.lock` coincidan) y `composer install` con caché entre corridas | Composer 2, PHP 8.3 | Activa |
 | **Seguridad** | `composer audit`: falla si alguna dependencia tiene una vulnerabilidad publicada | Composer | Activa |
 | **Lint** | `vendor/bin/pint --test`: falla si el código no respeta el estilo de Laravel | Laravel Pint | Activa |
-| **Test** | 56 tests (unitarios y de integración) sobre SQLite en memoria, con cobertura | PHPUnit 12 + PCOV | Activa |
+| **Test** | 95 tests (unitarios, de integración y de la API) sobre SQLite en memoria, con cobertura | PHPUnit 12 + PCOV | Activa |
 | **E2E** | Levanta la app con los datos de prueba y corre las pruebas de navegador (caso CP-TR-01 y regresiones). En paralelo con el job de tests | Selenium WebDriver + Chrome | Activa |
 | **Package** | Arma `educontrol-<commit>.zip` sin tests ni dependencias de desarrollo. Solo en `main` | `git archive`, Composer `--no-dev` | Activa |
 | **Verify (paquete)** | Revisa el contenido del `.zip`: tiene `artisan`, `public/index.php` y `vendor/autoload.php`, y **no** tiene `.env`, `tests/` ni PHPUnit | Script del workflow | Activa |
 | **Deploy** | Render publica `main` cuando el CI pasa (ver "Conectar el despliegue") | Render + `Dockerfile` | Activa |
 | **Verify (producción)** | Consulta `/up` de la aplicación publicada hasta recibir 200 | `curl` | Activa (`URL_PRODUCCION` cargada) |
 | **Notify** | Si falla en `main`, abre un issue con la etiqueta `no-conformidad`. Además GitHub manda correo al autor y el PR muestra la cruz roja | `gh issue create` | Activa |
+
+## Pipeline de la app mobile
+
+La app de [mobile/](../mobile/README.md) tiene su propio workflow, [`.github/workflows/mobile.yml`](../.github/workflows/mobile.yml). Corre solo cuando un push o un PR a `main` cambia algo dentro de `mobile/` (o el propio workflow), así los PR del backend no lo esperan.
+
+```
+Commit → Build (npm ci) → Lint (ESLint) → Tipos (TypeScript) → Test (Jest + cobertura) → Bundle (expo export)
+```
+
+| Etapa | Paso | Herramienta |
+|---|---|---|
+| **Build** | `npm ci` con caché de npm por `mobile/package-lock.json` | Node 22 |
+| **Lint** | `npm run lint` | ESLint con la configuración de Expo |
+| **Tipos** | `npm run typecheck` (`tsc --noEmit`): detecta errores de forma del JSON de la API | TypeScript |
+| **Test** | `npm run test:ci`: tests de pantallas, sesión y cliente HTTP con la API simulada | Jest + React Native Testing Library |
+| **Bundle** | `npx expo export --platform android`: confirma que la app compila apuntando a producción | Expo CLI |
+
+Guarda el artefacto `cobertura-mobile-<commit>` (14 días) con el reporte `lcov` que usa SonarQube. El APK no se genera en el CI: se arma con EAS Build cuando hay que entregar (ver [plan-mobile.md](plan-mobile.md), tarea M6.2).
+
+Las dependencias de la app no las actualiza Dependabot: las versiones tienen que coincidir con el SDK de Expo, y se actualizan juntas con `npx expo install --fix` al cambiar de SDK.
 
 ## Artefactos
 
@@ -91,3 +111,13 @@ php artisan test         # tests
 ```
 
 Para la cobertura local hace falta la extensión `pcov` o `xdebug`. En el CI ya está instalada.
+
+Y el de la app:
+
+```bash
+cd mobile
+npm ci
+npm run lint
+npm run typecheck
+npm run test:ci
+```

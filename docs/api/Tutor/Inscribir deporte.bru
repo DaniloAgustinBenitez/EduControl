@@ -1,0 +1,30 @@
+meta {
+  name: Inscribir deporte
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/hijos/{{alumnoId}}/inscripciones/deporte
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "deporte_id": {{deporteId}}
+  }
+}
+
+docs {
+  Corré antes "Catálogo" para cargar `deporteId`. Responde 422 con `regla` RN-03 (más de 2 deportes),
+  RN-04 (se superpone con otro deporte; Básquet choca con Fútbol a propósito) o RN-05 (choca con el cursado).
+}

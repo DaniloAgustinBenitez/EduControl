@@ -123,7 +123,7 @@ Las horas son estimadas. Cada tarea es un issue del [tablero](https://github.com
 | M0.1 | Crear los issues de este plan en el tablero, con la etiqueta `mobile` | Issues en *Por hacer* | 1 |
 | M0.2 | Agregar RF-25 a RF-28, RNF-11 a RNF-13 y HU10–HU11 al documento de requerimientos | Documento actualizado | 1 |
 | M0.3 | Crear la cuenta gratuita de Expo e instalar Expo Go en un Android y, si hay, en un iPhone | Cuenta y dispositivos listos | 1 |
-| M0.4 | Revisar y acordar entre los dos integrantes el contrato de la sección 4 | Sección 4 aprobada en el PR de este plan | 1 |
+| M0.4 | Revisar el contrato de la sección 4 (por ahora Danilo trabaja solo: lo revisa él antes de mergear) | Sección 4 y [api.md](api.md) revisados | 1 |
 
 ### M1 — API REST en Laravel (24 h)
 
@@ -269,3 +269,52 @@ Una tarea pasa a *Hecho* cuando:
 4. El otro integrante revisó el PR.
 5. Si toca pantallas, se probó en un celular real con Expo Go.
 6. La documentación de la sección 10 que le corresponde está actualizada.
+
+## 12. Estado de avance
+
+Actualizado al 10/11/2026. Los issues del tablero son el [#75 al #87](https://github.com/DaniloAgustinBenitez/EduControl/issues?q=label%3Amobile).
+
+| Tarea | Estado | Evidencia o lo que falta |
+|---|---|---|
+| M0.1 Issues en el tablero | Hecha | Issues #75 a #87 con la etiqueta `mobile`, uno por PR de la sección 7 |
+| M0.2 Requerimientos en el documento del plan | **Pendiente** | Pasar RF-25 a RF-28, RNF-11 a RNF-13 y HU10–HU11 al documento. Ya están en [trazabilidad.md](trazabilidad.md) |
+| M0.3 Cuenta de Expo y Expo Go | **Pendiente** | La tienen que crear los integrantes |
+| M0.4 Contrato de la API | **Pendiente de revisión** | El contrato está escrito en [api.md](api.md) y la API y la app ya lo cumplen; falta que Danilo lo revise en el diff del PR antes de mergear |
+| M1.1 a M1.9 API REST | Hecha | 39 tests en `tests/Feature/Api/`, prueba de punta a punta 31 de 31 OK ([pruebas.md](pruebas.md)), colección de Bruno en [api/](api/). El riesgo R1 no se dio: Spatie funciona con el token sin cambios |
+| M2.1 a M2.7 Base de la app | Hecha | Expo SDK 58 con TypeScript y Expo Router. `mobile/` excluida del Docker y sumada a SonarQube |
+| M3.1 a M3.6 Pantallas del tutor | Hecha | `mobile/app/(tutor)/hijos`, tests en `tutor.test.tsx` |
+| M4.1 a M4.3 Pantallas del docente | Hecha | `mobile/app/(docente)/cursos`, tests en `docente.test.tsx` |
+| Diseño igual a la web | Hecha (10/11) | Colores de `educontrol.css`, íconos equivalentes a Bootstrap Icons, barra superior con el ciclo, modo claro por defecto con botón de tema. Recorrido con clics reales en el navegador contra la API local: 19 de 19 pasos OK |
+| M5.1 Workflow `mobile.yml` | Hecha | Corre en el primer push que toque `mobile/` |
+| M5.2 Pre-commit con ESLint | Hecha | `.husky/pre-commit` |
+| M5.3 SonarQube | Hecha | `sonar-project.properties` con `mobile/app`, `mobile/src` y la cobertura `lcov` |
+| M5.4 Checklist en celulares | **Pendiente** | Necesita un Android y, si hay, un iPhone con Expo Go: checklist en [pruebas.md](pruebas.md) |
+| M5.5 Accesibilidad | Hecha en el código | Roles y etiquetas de accesibilidad y botones de 44 px o más. Falta revisarla con TalkBack o VoiceOver (está en la checklist) |
+| M5.6 Tiempos de la API | Hecha | Todos los endpoints por debajo de 1,1 s ([pruebas.md](pruebas.md)) |
+| M6.1 API en producción | **Parcial** | `docker/inicio.sh` corre `migrate --force` en cada arranque, así que la tabla de tokens se crea sola. Falta confirmar el login contra Render después del merge a `main` |
+| M6.2 APK con EAS Build | **Pendiente** | Necesita la cuenta de Expo: `npm install -g eas-cli`, `eas login`, `eas build:configure` y `eas build -p android --profile preview` |
+| M6.3 Manual de usuario | **Pendiente** | Agregar el capítulo de la app con capturas sacadas del celular |
+| M6.4 Documentación | Hecha | README, [trazabilidad.md](trazabilidad.md), [correcciones-plan.md](correcciones-plan.md), [calidad.md](calidad.md), [ci-cd.md](ci-cd.md) y [pruebas.md](pruebas.md) |
+| M6.5 Guion de la defensa | Hecha | Anexo de abajo |
+
+**Cambio respecto de la estructura prevista:** las pantallas quedaron en `app/(tutor)/hijos/` y `app/(docente)/cursos/` en lugar de un `index.tsx` dentro de cada grupo. Con dos `index.tsx`, los grupos `(tutor)` y `(docente)` chocaban en la misma ruta `/`. Ahora `app/index.tsx` decide a dónde ir según el rol.
+
+## Anexo: guion de demostración para la defensa (M6.5)
+
+Unos cinco minutos. Hace falta la web abierta en la computadora y la app en un celular con Expo Go (o el APK), las dos contra producción. Diez minutos antes, abrir la web para que Render se despierte.
+
+1. **El problema (30 s).** El padre hoy tiene que usar una computadora para inscribir a sus hijos. La app lo resuelve sin duplicar reglas: la app y la web usan el mismo `InscripcionService`.
+2. **Ingreso por rol (30 s).** En la app, ingresar como `admin@educontrol.test`: aparece "Usá la versión web". Cerrar sesión e ingresar como `tutor@educontrol.test`.
+3. **Mis hijos (30 s).** Se ven Sofía y Tomás con el estado de cada servicio. Deslizar hacia abajo para actualizar.
+4. **Reglas de negocio desde el celular (1 min 30 s).** Con Sofía:
+   - inscribir en Fútbol: se acepta;
+   - intentar Básquet: aparece "Básquet se superpone con Fútbol…" (RN-04);
+   - inscribir en Vóley: el contador marca "2 de 2" (RN-03).
+5. **Web y app comparten los datos (30 s).** En la computadora, entrar con el mismo tutor a `/autogestion`: Sofía aparece con Fútbol y Vóley. Dar de baja Vóley en la web, volver a la app y deslizar para actualizar: ya no está.
+6. **Docente (30 s).** Cerrar sesión e ingresar como `docente@educontrol.test`: sus cursos con materias, y la nómina de 1° año con el buscador.
+7. **Calidad (1 min).** En GitHub:
+   - la corrida de **CI** (PHPUnit con los 39 tests de la API) y la de **Mobile** (ESLint, TypeScript, Jest y el bundle de Android);
+   - [api.md](api.md) como contrato entre la app y el servidor;
+   - en [trazabilidad.md](trazabilidad.md), las filas de RF-25 a RF-28.
+
+Si Render no despierta a tiempo, la app muestra "Despertando el servidor…". Es justamente lo que pide RNF-13, así que también sirve para mostrarlo.

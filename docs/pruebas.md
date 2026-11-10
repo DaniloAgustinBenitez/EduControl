@@ -14,6 +14,11 @@ php artisan test
 | `tests/Feature/GestionTest.php` | ABM, asignaciones, autogestión completa del tutor y exportación de los 6 reportes |
 | `tests/Feature/ConfiguracionTest.php` | ABM de niveles, materias, deportes y recorridos; no se borran deportes ni recorridos con inscriptos |
 | `tests/Feature/RequerimientosTest.php` | RF-01, RF-02, RF-13, RF-16 y mensajes de error en español (RNF-05) |
+| `tests/Feature/Api/AuthTest.php` | API: login, logout, perfil, tokens vencidos o revocados (401), límite de intentos (429), permisos de Spatie con token (riesgo R1) y que la sesión web no habilite la API |
+| `tests/Feature/Api/AutogestionTest.php` | API del tutor: los cuatro servicios, RN-03 a RN-07, validaciones, sin ciclo activo, bajas y forma del JSON del contrato |
+| `tests/Feature/Api/DocenteTest.php` | API del docente: cursos con sus materias, nómina ordenada, curso no asignado (403) |
+
+Son 95 tests con 859 verificaciones. Los de la app mobile están en `mobile/__tests__/` (69 tests con Jest) y se corren con `cd mobile && npm test`.
 
 Los tests corren también en el CI en cada push, con reporte de cobertura (ver [ci-cd.md](ci-cd.md)).
 
@@ -167,3 +172,67 @@ Probar en un celular real, o en las herramientas de desarrollo del navegador (F1
 | Administrador | Crea una materia | OK | Materia creada. |
 | Administrador | Intenta borrar un nivel con cursos: avisa y no lo borra | OK | No se puede eliminar un nivel que tiene cursos. |
 | Administrador | Crea el ciclo 2027 activo y el 2026 queda cerrado | OK | [{"anio":2026,"activo":0},{"anio":2027,"activo":1}] |
+
+## App mobile (M5.4 a M5.6)
+
+Plan y alcance en [plan-mobile.md](plan-mobile.md). La API tiene sus propios tests de integración en `tests/Feature/Api/` y la app los suyos en `mobile/__tests__/`; los dos corren en el CI. Además, la API se probó contra un servidor real, y la checklist del final es la prueba **en un celular real**, que el CI no puede hacer.
+
+### API de punta a punta y tiempos (M5.6, RNF-07)
+
+**Ejecutada el 10/11/2026: 31 de 31 verificaciones OK.** Laravel corriendo en local (`php artisan serve`) sobre una base SQLite nueva con `migrate:fresh --seed` más `VolumenSeeder` (3003 alumnos), y un script que hace pedidos HTTP reales con los tokens de los usuarios de prueba. Recorre el mismo guion que la prueba web del tutor:
+- cursado, comedor, Norte y Fútbol aceptados;
+- Básquet, segundo recorrido y tercer deporte rechazados con RN-04, RN-06 y RN-03;
+- baja del comedor;
+- RN-07 cambiando el id;
+- los 401, 403 y 404 del contrato;
+- el docente con su nómina, el aviso de `usa_app` para el administrador y la revocación del token al cerrar sesión.
+
+Tiempo de cada pedido, medido desde el cliente:
+
+| Endpoint | Tiempo |
+|---|---|
+| `POST /login` | 1,06 s (incluye verificar el hash bcrypt de la contraseña) |
+| `GET /perfil` | 0,56 s |
+| `GET /hijos` | 0,85 s |
+| `GET /hijos/{alumno}` | 0,53 s |
+| `GET /catalogo` | 0,46 s |
+| `POST .../inscripciones/cursado` | 0,49 s |
+| `POST .../inscripciones/deporte` (valida RN-03, RN-04 y RN-05) | 0,48 s |
+| `DELETE .../inscripciones/...` | 0,49 s |
+| `GET /docente/cursos` | 0,44 s |
+| `GET /docente/cursos/{curso}` (nómina de 249 alumnos) | 0,47 s |
+| `POST /logout` | 0,46 s |
+
+Todos por debajo de los 3 s del RNF-07. Unos 0,4 s de cada pedido son el arranque de `php artisan serve` en Windows, que en producción (Apache con OPcache) no existe. Lo que no entra en esta medición es el arranque en frío de Render, que puede tardar hasta un minuto: lo cubre el aviso de RNF-13 en la app.
+
+### Checklist en celulares (M5.4)
+
+**Cómo correrla:** en Windows, `mobile\probar-en-celular.cmd -Reiniciar`. El script levanta la API local con datos de prueba nuevos y Expo con el QR. Escanear el QR con Expo Go y repetir cada paso en un **Android** y, si hay, en un **iPhone**. También puede apuntar a producción con `-Produccion` (ver [mobile/README.md](../mobile/README.md)).
+
+**Sesión**
+- [ ] Ingresar con una contraseña incorrecta: muestra "El correo o la contraseña no son correctos."
+- [ ] Ingresar como tutor, cerrar la app del todo y volver a abrirla: sigue con la sesión iniciada.
+- [ ] Cerrar sesión: vuelve al ingreso y, al reabrir la app, pide ingresar de nuevo.
+- [ ] Ingresar como `admin@educontrol.test`: muestra el aviso de usar la versión web.
+- [ ] Con el servidor de Render dormido (más de 15 minutos sin uso): aparece "Despertando el servidor…" y después carga (RNF-13).
+- [ ] En modo avión: muestra un error de conexión entendible, sin cerrarse.
+
+**Tutor** (`tutor@educontrol.test`)
+- [ ] Ve a Sofía y a Tomás, y a nadie más.
+- [ ] Inscribe a Sofía en cursado, comedor, el recorrido Norte y Fútbol.
+- [ ] Intenta Básquet: lo rechaza porque se superpone con Fútbol (RN-04).
+- [ ] Inscribe a Sofía en Vóley y el contador marca "2 de 2"; no permite un tercer deporte (RN-03).
+- [ ] Intenta otro recorrido: pide dar de baja el actual (RN-06).
+- [ ] Da de baja el comedor: pide confirmación y después actualiza el estado.
+- [ ] Abre la web con el mismo usuario: ve exactamente las mismas inscripciones.
+- [ ] Desliza hacia abajo en "Mis hijos": actualiza los datos.
+
+**Docente** (`docente@educontrol.test`)
+- [ ] Ve sus cursos y materias (1° año: Matemática y Biología).
+- [ ] Abre 1° año y ve la nómina; el buscador filtra por apellido.
+
+**Accesibilidad y diseño (M5.5)**
+- [ ] Con TalkBack (Android) o VoiceOver (iPhone) se entiende cada botón.
+- [ ] En modo oscuro todos los textos se leen bien.
+- [ ] Ningún botón es tan chico que cueste tocarlo.
+- [ ] Con la letra del sistema agrandada, nada queda cortado.

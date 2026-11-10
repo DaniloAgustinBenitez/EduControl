@@ -1,0 +1,29 @@
+meta {
+  name: Inscribir transporte
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/hijos/{{alumnoId}}/inscripciones/transporte
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {
+    "recorrido_id": {{recorridoId}}
+  }
+}
+
+docs {
+  Corré antes "Catálogo" para cargar `recorridoId`. Un segundo recorrido responde 422 con `regla: "RN-06"`.
+}

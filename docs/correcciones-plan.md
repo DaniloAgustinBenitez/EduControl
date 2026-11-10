@@ -4,23 +4,26 @@ Cambios a aplicar en `PlanTrabajo_Completo.pdf` para que el documento describa l
 
 ## Sección 9.5 — Conectores de la arquitectura
 
-El plan indica que el intercambio de datos se hace con **API REST en formato JSON**. El sistema no expone una API: las pantallas se arman en el servidor con Blade y el navegador envía formularios HTML sobre HTTPS. Es una decisión válida para un sistema de gestión interno (menos código, menos superficie de ataque), pero conviene que el documento lo refleje.
+El plan indica que el intercambio de datos se hace con **API REST en formato JSON**. Desde el trabajo mobile ([plan-mobile.md](plan-mobile.md)) eso es cierto, pero solo para la app: la web sigue armando las pantallas en el servidor con Blade. Conviene que el documento distinga los dos clientes.
 
 **Texto propuesto para reemplazar la tabla de la sección 9.5:**
 
 | Conector | Tecnología | Función |
 |---|---|---|
-| Cliente ↔ Servidor de aplicación | Protocolo HTTPS (formularios HTML y respuestas renderizadas con Blade) | Transporta las solicitudes del navegador al servidor y devuelve la página ya construida, sobre canal cifrado. |
-| Validación en el cliente | HTML5 + JavaScript | Verifica los datos obligatorios y su formato antes de enviarlos, reduciendo viajes innecesarios al servidor. |
+| Navegador ↔ Servidor de aplicación | Protocolo HTTPS (formularios HTML y respuestas renderizadas con Blade) | Transporta las solicitudes del navegador al servidor y devuelve la página ya construida, sobre canal cifrado. |
+| App mobile ↔ Servidor de aplicación | API REST en JSON (`/api/v1`) sobre HTTPS, autenticada con tokens de Laravel Sanctum | Intercambia datos con la app del tutor y del docente. Usa las mismas reglas de negocio que la web ([api.md](api.md)). |
+| Validación en el cliente | HTML5 + JavaScript en la web; TypeScript en la app | Verifica los datos obligatorios y su formato antes de enviarlos, reduciendo viajes innecesarios al servidor. |
 | Servidor de aplicación ↔ Base de datos | Eloquent ORM sobre PDO, con consultas parametrizadas | Ejecuta las operaciones CRUD evitando la inyección de código SQL. |
 
 ## Sección 10.2 — Herramientas por área
 
-Quitar la fila de **Postman**, porque no hay API que probar, y reemplazarla por:
+La fila de **Postman** puede quedar, porque ahora hay una API que probar. Se usó [Bruno](https://www.usebruno.com), una alternativa libre cuya colección se guarda en el repositorio ([api/](api/)). Agregar además:
 
 | Área | Herramienta | Justificación |
 |---|---|---|
-| Pruebas automatizadas | PHPUnit (incluido en Laravel) | 50 tests que verifican las 7 reglas de negocio, el acceso por rol y los reportes antes de cada entrega. |
+| Pruebas automatizadas | PHPUnit (incluido en Laravel) | Tests que verifican las 7 reglas de negocio, el acceso por rol, los reportes y la API antes de cada entrega. |
+| Pruebas de la API | Bruno | Colección versionada con un pedido por endpoint, contra local y producción. |
+| App mobile | Expo (React Native) + Jest | La app se prueba en el celular con Expo Go y sus pantallas con tests automáticos. |
 
 ## Sección 10.1 — Decisión de stack
 

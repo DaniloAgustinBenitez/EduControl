@@ -1,0 +1,35 @@
+meta {
+  name: Login tutor
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "email": "tutor@educontrol.test",
+    "password": "password",
+    "dispositivo": "Bruno"
+  }
+}
+
+script:post-response {
+  // Guarda el token para el resto de los pedidos (no se escribe en disco).
+  if (res.status === 200) {
+    bru.setVar("token", res.body.token);
+  }
+}
+
+docs {
+  Usuario de prueba público del tutor. Devuelve `{ token, usuario }`.
+  Con contraseña incorrecta responde 422; al 7.º intento en un minuto, 429.
+}

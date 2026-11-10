@@ -1,0 +1,30 @@
+meta {
+  name: Hijos
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/hijos
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post-response {
+  // El primer hijo queda como alumno de los pedidos siguientes.
+  if (res.status === 200 && res.body.hijos.length > 0) {
+    bru.setVar("alumnoId", res.body.hijos[0].id);
+  }
+}
+
+docs {
+  Requiere el login del tutor. Devuelve `{ ciclo, hijos: [AlumnoResumen] }`.
+}

@@ -9,6 +9,7 @@ node_modules
 vendor
 tests
 docs
+mobile
 reportes
 .scannerwork
 bootstrap/cache/*.php

@@ -1,0 +1,31 @@
+meta {
+  name: Catálogo
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{baseUrl}}/catalogo
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post-response {
+  // Primer deporte y primer recorrido, para los pedidos de inscripción.
+  if (res.status === 200) {
+    if (res.body.deportes.length > 0) bru.setVar("deporteId", res.body.deportes[0].id);
+    if (res.body.recorridos.length > 0) bru.setVar("recorridoId", res.body.recorridos[0].id);
+  }
+}
+
+docs {
+  Devuelve `{ ciclo, max_deportes, deportes, recorridos }`, ordenados por nombre.
+}

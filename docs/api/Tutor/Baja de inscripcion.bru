@@ -1,0 +1,24 @@
+meta {
+  name: Baja de inscripción
+  type: http
+  seq: 8
+}
+
+delete {
+  url: {{baseUrl}}/hijos/{{alumnoId}}/inscripciones/comedor/{{inscripcionId}}
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Corré antes "Inscribir comedor" para cargar `inscripcionId`. Para otro servicio, cambiá `comedor` en la URL
+  (`cursado`, `transporte` o `deporte`) y usá el `id` que figura en `estado`. Si la inscripción no es de ese alumno, 404.
+}

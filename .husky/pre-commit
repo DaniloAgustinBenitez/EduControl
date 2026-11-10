@@ -1,5 +1,22 @@
-# Bloquea el commit si algún archivo PHP agregado tiene errores de sintaxis
-# o no respeta el estilo de Laravel (Pint). Es el mismo control que el Lint del CI.
+# Bloquea el commit si algún archivo agregado no pasa el mismo control que el Lint del CI:
+# - PHP: errores de sintaxis o estilo de Laravel (Pint).
+# - App mobile (mobile/): ESLint.
+
+# --- App mobile -------------------------------------------------------------
+mobiles=$(git diff --cached --name-only --diff-filter=ACMR -- 'mobile/*.ts' 'mobile/*.tsx' 'mobile/*.js' 'mobile/*.jsx' \
+  | sed 's|^mobile/||')
+if [ -n "$mobiles" ]; then
+  if [ ! -d mobile/node_modules ]; then
+    echo "pre-commit: hay archivos de la app y no están instaladas sus dependencias. Corré: cd mobile && npm install"
+    exit 1
+  fi
+  (cd mobile && npx --no-install eslint --max-warnings=0 $mobiles) || {
+    echo "pre-commit: ESLint encontró problemas en la app. Revisalos con: cd mobile && npm run lint"
+    exit 1
+  }
+fi
+
+# --- PHP --------------------------------------------------------------------
 archivos=$(git diff --cached --name-only --diff-filter=ACMR -- '*.php')
 [ -z "$archivos" ] && exit 0
 
