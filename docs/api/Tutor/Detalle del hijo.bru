@@ -1,0 +1,23 @@
+meta {
+  name: Detalle del hijo
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/hijos/{{alumnoId}}
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Corré antes "Hijos" para cargar `alumnoId`. Con el id de un alumno que no es hijo del tutor responde 403 (RN-07).
+}

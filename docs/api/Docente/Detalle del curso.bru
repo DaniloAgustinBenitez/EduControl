@@ -1,0 +1,23 @@
+meta {
+  name: Detalle del curso
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/docente/cursos/{{cursoId}}
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+docs {
+  Corré antes "Cursos" para cargar `cursoId`. Un curso que no está asignado al docente responde 403.
+}

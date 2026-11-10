@@ -21,16 +21,11 @@ class AutogestionController extends Controller
 
     public function index(Request $request)
     {
-        $tutor = $request->user()->tutor;
         $ciclo = CicloLectivo::actual();
-        $hijos = $tutor ? $tutor->alumnos()->with('curso.nivel')->orderBy('nombre')->get() : collect();
 
         return view('autogestion.index', [
             'ciclo' => $ciclo,
-            'hijos' => $hijos->map(fn (Alumno $alumno) => [
-                'alumno' => $alumno,
-                'estado' => $ciclo ? $this->inscripciones->estado($alumno, $ciclo) : null,
-            ]),
+            'hijos' => $this->inscripciones->hijosConEstado($request->user()->tutor, $ciclo),
         ]);
     }
 

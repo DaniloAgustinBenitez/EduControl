@@ -28,4 +28,7 @@ final class Rol
         self::DOCENTE => 'Docente',
         self::TUTOR => 'Tutor / Padre',
     ];
+
+    /** Perfiles que usan la app mobile (RF-26); el resto sigue en la web. */
+    public const USAN_APP = [self::TUTOR, self::DOCENTE];
 }

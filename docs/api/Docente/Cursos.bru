@@ -1,0 +1,30 @@
+meta {
+  name: Cursos
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/docente/cursos
+  body: none
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+script:post-response {
+  // El primer curso queda para "Detalle del curso".
+  if (res.status === 200 && res.body.cursos.length > 0) {
+    bru.setVar("cursoId", res.body.cursos[0].id);
+  }
+}
+
+docs {
+  Requiere el login del docente. Devuelve sus cursos con horarios y solo las materias que dicta en cada uno.
+}

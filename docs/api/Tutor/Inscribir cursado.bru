@@ -1,0 +1,27 @@
+meta {
+  name: Inscribir cursado
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/hijos/{{alumnoId}}/inscripciones/cursado
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {}
+}
+
+docs {
+  201 con `{ message, estado }`. Si ya está inscripto, 422 con `regla: "RN-01"`.
+}

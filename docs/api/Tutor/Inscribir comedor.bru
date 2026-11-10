@@ -1,0 +1,34 @@
+meta {
+  name: Inscribir comedor
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{baseUrl}}/hijos/{{alumnoId}}/inscripciones/comedor
+  body: json
+  auth: bearer
+}
+
+headers {
+  Accept: application/json
+}
+
+auth:bearer {
+  token: {{token}}
+}
+
+body:json {
+  {}
+}
+
+script:post-response {
+  // Id de la inscripción, para probar la baja.
+  if (res.status === 201) {
+    bru.setVar("inscripcionId", res.body.estado.comedor.id);
+  }
+}
+
+docs {
+  201 con `{ message, estado }`. Si ya está inscripto, 422 con `regla: null`.
+}

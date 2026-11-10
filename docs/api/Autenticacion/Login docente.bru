@@ -1,0 +1,34 @@
+meta {
+  name: Login docente
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/login
+  body: json
+  auth: none
+}
+
+headers {
+  Accept: application/json
+}
+
+body:json {
+  {
+    "email": "docente@educontrol.test",
+    "password": "password",
+    "dispositivo": "Bruno"
+  }
+}
+
+script:post-response {
+  // Guarda el token para el resto de los pedidos (no se escribe en disco).
+  if (res.status === 200) {
+    bru.setVar("token", res.body.token);
+  }
+}
+
+docs {
+  Usuario de prueba público del docente. Después de este login, los pedidos de la carpeta Tutor responden 403.
+}
