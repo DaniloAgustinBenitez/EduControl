@@ -9,7 +9,7 @@ App para celulares de EduControl, pensada para los dos perfiles que usan el sist
 
 La configuración institucional, la gestión de personas y los reportes **siguen en la web**: son tareas de escritorio, con tablas grandes y exportaciones a PDF y Excel. Si un administrador o administrativo entra a la app, se le indica que use la web.
 
-> **Estado:** en planificación. El plan de trabajo completo, con etapas, tareas y cronograma, está en [docs/plan-mobile.md](../docs/plan-mobile.md).
+> **Estado (10/11/2026):** app y API terminadas y probadas con tests (69 de la app, 39 de la API) y contra un servidor Laravel real. Falta la prueba en celulares reales con Expo Go y generar el APK. El avance tarea por tarea está en [docs/plan-mobile.md](../docs/plan-mobile.md#12-estado-de-avance).
 
 ## Cómo funciona
 
@@ -35,35 +35,65 @@ La configuración institucional, la gestión de personas y los reportes **siguen
 | Navegación | Expo Router (rutas por archivos, igual que las carpetas de vistas de Laravel) |
 | Sesión | `expo-secure-store` para el token |
 | Llamadas a la API | `fetch` con un cliente propio (`src/api/cliente.ts`) que agrega el token y traduce los errores |
+| Interfaz | Mismo diseño que la web (paleta de `educontrol.css`, tarjetas, insignias); íconos de `@expo/vector-icons` (MaterialCommunityIcons) equivalentes a los Bootstrap Icons |
 | Pruebas | Jest + React Native Testing Library |
 | Estilo de código | ESLint (config de Expo) + Prettier |
 | Builds | Expo Go para desarrollo; EAS Build para el APK de Android |
 
-## Estructura prevista
+## Estructura
 
 ```
 mobile/
-  app/                      Pantallas (Expo Router)
-    _layout.tsx             Proveedor de sesión y redirección según el rol
-    login.tsx
+  app/                          Pantallas (Expo Router: cada archivo es una ruta)
+    _layout.tsx                 Proveedores de tema y sesión, StatusBar según el tema y pedido a /up para despertar al servidor
+    index.tsx                   Espera la sesión guardada y redirige según el rol
+    login.tsx                   Ingreso con correo y contraseña
+    usar-web.tsx                Aviso para administrador y administrativo: "Usá la versión web"
     (tutor)/
-      index.tsx             Mis hijos, con el estado de cada uno
-      alumno/[id].tsx       Detalle: inscribir y dar de baja servicios
+      _layout.tsx               Solo deja entrar al tutor; barra superior con logo, ciclo lectivo, tema y salir
+      hijos/index.tsx           Mis hijos: tarjeta por hijo con el estado de los 4 servicios
+      hijos/[id].tsx            Detalle: inscribir y dar de baja cursado, comedor, transporte y deportes
     (docente)/
-      index.tsx             Mis cursos y materias
-      curso/[id].tsx        Horarios y nómina del curso
+      _layout.tsx               Solo deja entrar al docente; barra superior con logo, tema y salir
+      cursos/index.tsx          Mis cursos: nivel, horarios y materias
+      cursos/[id].tsx           Horarios, materias y nómina con buscador
   src/
-    api/                    Cliente HTTP y una función por endpoint
-    sesion/                 Contexto de sesión (token, usuario, rol)
-    componentes/            Botones, tarjetas, avisos y estados de carga
-  __tests__/                Tests de Jest
-  app.json                  Configuración de Expo (nombre, ícono, colores)
-  .env.example              EXPO_PUBLIC_API_URL
+    api/
+      cliente.ts                fetch con token, timeout de 70 s, errores tipados (ErrorApi) y aviso de servidor lento
+      tipos.ts                  Tipos de los objetos de docs/api.md
+      autenticacion.ts          login, logout, perfil
+      tutor.ts                  hijos, catálogo, inscribir y dar de baja
+      docente.ts                cursos del docente y detalle de un curso
+      servidor.ts               GET /up al abrir la app
+    sesion/
+      SesionContext.tsx         Token y usuario: ingreso, cierre y restauración validada con /perfil
+      almacen.ts                Guardado cifrado con expo-secure-store
+      rutas.ts                  Pantalla inicial según el rol
+    componentes/
+      BarraSuperior.tsx         Barra como .ec-barra de la web (logo, insignia del ciclo, BotonTema, BotonCerrarSesion)
+      Icono.tsx                 Íconos MaterialCommunityIcons y los de cada servicio
+      Boton, Tarjeta, Aviso, Encabezado, Etiqueta, OpcionRadio, Logo, Cargando, EstadoVacio, Horarios, ListaMaterias
+    hooks/                      useCarga (carga y "deslizar para actualizar") y useServidorLento
+    tema/
+      colores.ts                Colores de public/css/educontrol.css (claro y oscuro), useTema y useColores
+      TemaContext.tsx           Tema elegido por el usuario: arranca en claro, como la web
+      preferencia.ts            Guarda el tema (SecureStore en el celular; localStorage "ec-tema" en el navegador)
+    utilidades/
+      nomina.ts                 Orden y búsqueda de la nómina
+      confirmar.ts              Confirmación de bajas: Alert en el celular, window.confirm en el navegador
+      navegacion.ts             "Volver": pantalla anterior o, si no hay historial, la lista
+  __tests__/                    Tests de Jest con la API simulada (fetch mockeado)
+  app.json                      Configuración de Expo (nombre, ícono, colores, paquete com.educontrol.app)
+  .env.example                  EXPO_PUBLIC_API_URL
 ```
 
-## Cómo se va a correr (cuando exista la etapa M2)
+La app **no tiene reglas de negocio**: si la API rechaza una inscripción (por ejemplo un `422` con `regla: "RN-04"`), muestra el `message` tal cual en la sección del servicio. Si un pedido tarda más de 4 segundos, avisa "Despertando el servidor, puede tardar hasta un minuto…" (RNF-13), y un `401` cierra la sesión y vuelve al login.
 
-Requisitos: Node 20 o superior y la app **Expo Go** en el celular (Android o iOS).
+El tema arranca en **claro**, igual que la web, y se cambia con el botón de luna/sol de la barra superior; la elección queda guardada.
+
+## Cómo se corre
+
+Requisitos: Node 22.13 o superior y la app **Expo Go** en el celular (Android o iOS).
 
 ```bash
 cd mobile
@@ -74,7 +104,20 @@ npx expo start              # escanear el QR con Expo Go
 
 Para `EXPO_PUBLIC_API_URL` hay dos opciones:
 
-- **Contra producción:** `https://educontrol-5btq.onrender.com/api/v1`. Es lo más simple, pero la primera llamada puede tardar hasta un minuto si Render estaba dormido.
+- **Contra producción:** `https://educontrol-5btq.onrender.com/api/v1`. Es lo más simple, pero la primera llamada puede tardar hasta un minuto si Render estaba dormido. La API existe en producción recién cuando estos cambios llegan a `main` y Render los despliega.
 - **Contra el Laravel local:** levantar `php artisan serve --host=0.0.0.0` y usar la IP de la PC en la red (por ejemplo `http://192.168.0.10:8000/api/v1`). El celular y la PC tienen que estar en el mismo Wi-Fi, y el firewall de Windows tiene que permitir el puerto 8000.
 
+Si no hay `.env`, la app usa la URL de producción. Después de cambiar el `.env` hay que reiniciar `npx expo start`.
+
 Los usuarios de prueba son los mismos de la web: `tutor@educontrol.test` y `docente@educontrol.test`, con contraseña `password`.
+
+### Calidad
+
+| Comando | Qué hace |
+|---|---|
+| `npm run lint` | ESLint (config de Expo + Prettier), sin advertencias permitidas |
+| `npm run typecheck` | TypeScript sin generar archivos (`tsc --noEmit`) |
+| `npm test` | Tests de Jest y React Native Testing Library |
+| `npm run test:ci` | Tests con cobertura; el reporte `lcov` queda en `mobile/coverage/` |
+| `npm run format` | Formatea el código con Prettier |
+| `npx expo export --platform android` | Compila el bundle de Android, para comprobar que la app arma sin errores |
