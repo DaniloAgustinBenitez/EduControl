@@ -1,7 +1,7 @@
 # Matriz de trazabilidad
 
 Dónde se implementa cada requerimiento del plan de trabajo y qué test lo verifica.
-Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php artisan test` y CI de GitHub Actions), con 83,6 % de cobertura de líneas.
+Estado al 10/11/2026: **95 tests de PHP con 859 verificaciones y 69 tests de la app mobile, todos en verde** (`php artisan test`, `npm test` en `mobile/` y CI de GitHub Actions). La cobertura de líneas era del 83,6 % al 22/10, antes de sumar la API; la de la app es del 94,8 %.
 
 ## Requerimientos funcionales
 
@@ -27,6 +27,10 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 | RF-18 Reporte por recorrido | `ReporteService::porRecorrido` | idem |
 | RF-19 Exportar a PDF y planilla | `ReporteController::pdf/planilla` (DomPDF, PhpSpreadsheet) | idem |
 | RF-20 a RF-24 Configuración institucional | `Nivel/Curso/Materia/Deporte/Recorrido/HorarioController` | `GestionTest::test_rn02_*`, `test_alta_de_curso_*`, `AccesoPorRolTest` |
+| RF-25 API REST versionada y con token | `routes/api.php`, `Api\*Controller`, `app/Http/Resources`, Sanctum. Contrato en [api.md](api.md) | `Api\AuthTest`, `Api\AutogestionTest`, `Api\DocenteTest`; prueba de punta a punta en [pruebas.md](pruebas.md) |
+| RF-26 App: ingreso y redirección por rol | `mobile/app/login.tsx`, `mobile/app/index.tsx`, `mobile/app/usar-web.tsx`, `mobile/src/sesion` | `mobile/__tests__/login.test.tsx`, `sesion.test.tsx`, `navegacion.test.tsx` |
+| RF-27 App del tutor | `mobile/app/(tutor)/hijos`, `mobile/src/api/tutor.ts` | `mobile/__tests__/tutor.test.tsx` |
+| RF-28 App del docente | `mobile/app/(docente)/cursos`, `mobile/src/api/docente.ts` | `mobile/__tests__/docente.test.tsx` |
 
 ## Requerimientos no funcionales
 
@@ -41,7 +45,10 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 | RNF-07 Menos de 3 segundos | Medido con 3000 alumnos: el reporte más pesado, 0,9 s | `php artisan reportes:medir`, tabla en `pruebas.md` |
 | RNF-08 Disponibilidad | Render con chequeo de salud en `/up` y verificación desde el CI después de cada merge | Publicada desde el 27/10/2026. Limitación del plan gratis: se apaga a los 15 minutos sin uso y tarda hasta un minuto en volver |
 | RNF-09 Respaldo y restauración | `db:respaldar` / `db:restaurar` | Prueba documentada en `respaldos.md` |
-| RNF-10 Capas separadas | Controladores (presentación) → Services (negocio) → Eloquent (datos) | Las reglas viven solo en `app/Services` |
+| RNF-10 Capas separadas | Controladores (presentación) → Services (negocio) → Eloquent (datos) | Las reglas viven solo en `app/Services`; la API y la web llaman al mismo `InscripcionService` |
+| RNF-11 Token seguro | Token en `expo-secure-store`, vencimiento de 30 días (`config/sanctum.php`), revocación al cerrar sesión, la API solo acepta el token y no la sesión web | `Api\AuthTest::test_el_token_vence_a_los_30_dias`, `test_logout_revoca_solo_el_token_usado`, `test_la_sesion_web_no_habilita_la_api`; `mobile/__tests__/sesion.test.tsx` |
+| RNF-12 Android 10+ e iOS 16+ | Expo SDK 58 (React Native 0.88) | Bundle de Android compilado en el CI (`mobile.yml`). Falta la prueba en celulares reales (checklist de [pruebas.md](pruebas.md)) |
+| RNF-13 Aviso de servidor dormido | `mobile/src/hooks/useServidorLento.ts`, pedido a `/up` al abrir la app, timeout de 70 s | `mobile/__tests__/cliente.test.ts` (timeout) y `navegacion.test.tsx` (aviso a los 4 s) |
 
 ## Reglas de negocio
 
@@ -68,6 +75,8 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 | HU7 Comedor y transporte | Hecha | idem |
 | HU8 Consulta y baja | Hecha | idem |
 | HU9 Reportes consolidados | Hecha | `/reportes` |
+| HU10 El padre inscribe desde el celular | Hecha; falta la prueba en un celular real | App mobile, sección *Mis hijos* |
+| HU11 El docente consulta su curso desde el celular | Hecha; falta la prueba en un celular real | App mobile, sección *Mis cursos* |
 
 ## Pendientes conocidos
 
@@ -76,6 +85,6 @@ Estado al 22/10/2026: **56 tests, 302 verificaciones, todos en verde** (`php art
 | Disponibilidad continua (RNF-08) | El plan gratis de Render se apaga sin uso; para tenerla siempre encendida hace falta el plan pago |
 | `main` protegida (sección 12.1) | GitHub exige plan Pro para repos privados |
 | Wireframes y mockup (sección 11) | No están en el repositorio |
-| Arquitectura, sección 9.5 | El plan menciona API REST/JSON; el sistema usa formularios con Blade. Ver `correcciones-plan.md` |
+| App mobile en celulares reales | Correr la checklist de [pruebas.md](pruebas.md) en Android e iOS con Expo Go y generar el APK con EAS Build ([plan-mobile.md](plan-mobile.md), M5.4 y M6.2) |
 | Nombre del cuarto rol | El plan lo llama "padre"; el sistema lo muestra como "Tutor / Padre" |
 | PDF de más de 500 filas | Se exporta con filtro o en Excel (límite de memoria de DomPDF) |

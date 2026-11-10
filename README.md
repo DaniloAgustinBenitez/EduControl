@@ -1,8 +1,9 @@
 # EduControl
 
 [![CI](https://github.com/DaniloAgustinBenitez/EduControl/actions/workflows/ci.yml/badge.svg)](https://github.com/DaniloAgustinBenitez/EduControl/actions/workflows/ci.yml)
+[![Mobile](https://github.com/DaniloAgustinBenitez/EduControl/actions/workflows/mobile.yml/badge.svg)](https://github.com/DaniloAgustinBenitez/EduControl/actions/workflows/mobile.yml)
 
-Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables.
+Sistema de gestión escolar: configuración institucional, gestión de alumnos, docentes y tutores, autogestión de inscripciones por parte de los padres (cursado, comedor, transporte y deportes) y reportes exportables. Tutores y docentes tienen además una **app mobile** (Expo + React Native) que usa la API REST del sistema: ver [mobile/](mobile/README.md).
 
 Hecho con **Laravel 13**, **MySQL 8**, **Bootstrap 5** y **DataTables**, con menú lateral, modo claro/oscuro y páginas de error propias. Los estilos del sistema están en `public/css/educontrol.css`.
 
@@ -82,6 +83,7 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 - [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
 - [Correcciones a aplicar en el Plan de Trabajo](docs/correcciones-plan.md)
 - [Plan de trabajo de la app mobile (tutor y docente)](docs/plan-mobile.md) — el apartado de la app está en [mobile/](mobile/README.md)
+- [API REST v1 que usa la app](docs/api.md) — colección de Bruno para probarla en [docs/api/](docs/api/)
 
 ## Estructura principal
 
@@ -89,6 +91,7 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 .github/                Pipeline de CI, Dependabot, CODEOWNERS y plantillas de PR e issues
 app/
   Http/Controllers/     ABM, autogestión, docente y reportes
+  Http/Controllers/Api/ API REST de la app mobile (Sanctum) y Http/Resources/ con el JSON que devuelve
   Services/             InscripcionService (reglas RN), SuperposicionHoraria, ReporteService, CuentaService
   Policies/             AlumnoPolicy (RN-07: el tutor solo opera sobre sus hijos)
   Support/Rol.php       Los cuatro roles y sus permisos
@@ -96,8 +99,8 @@ database/
   migrations/           Esquema completo
   seeders/              Roles, datos institucionales, usuarios de prueba y volumen
 resources/views/        Vistas Blade (layout con Bootstrap 5 + DataTables)
-tests/                  Tests unitarios y de integración
-mobile/                 App para celulares (Expo + React Native), en planificación: ver docs/plan-mobile.md
+tests/                  Tests unitarios y de integración (en Feature/Api, los de la API)
+mobile/                 App para celulares (Expo + React Native) del tutor y el docente
 ```
 
 ## Licencia

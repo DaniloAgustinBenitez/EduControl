@@ -6,13 +6,13 @@ Cómo el proyecto aplica el material de *Aseguramiento de la calidad del softwar
 
 | Atributo | Qué exige el sistema | Evidencia | Estado |
 |---|---|---|---|
-| **F**uncionalidad | 24 requerimientos funcionales, 7 reglas de negocio, 9 historias de usuario | [trazabilidad.md](trazabilidad.md): cada RF/RN con su código y su test. 56 tests, 302 verificaciones | Cumplido |
+| **F**uncionalidad | 28 requerimientos funcionales, 7 reglas de negocio, 11 historias de usuario | [trazabilidad.md](trazabilidad.md): cada RF/RN con su código y su test. 95 tests de PHP (859 verificaciones) y 69 de la app | Cumplido |
 | **U**sabilidad | Interfaz clara, errores en español, uso en celular (RNF-05, RNF-06) | Mensajes en `lang/es`, Bootstrap 5 responsive. Pruebas por rol y de diseño responsivo ejecutadas el 26/10: 53 de 53 pasos OK ([pruebas.md](pruebas.md)). Falta probar en Firefox y Safari | Cumplido, salvo multinavegador |
 | **R**eliability (fiabilidad) | Sin duplicados, respaldo y restauración (RNF-04, RNF-09) | Índices únicos en las inscripciones, `db:respaldar` y `db:restaurar` ([respaldos.md](respaldos.md)), CI en cada cambio | Cumplido |
 | **P**erformance | Reportes en menos de 3 segundos (RNF-07) | Medido con 3003 alumnos: el peor caso, 0,94 s ([pruebas.md](pruebas.md)) | Cumplido |
 | **S**oporte | Mantenible y configurable | Capas separadas (RNF-10), documentación en `docs/`, convenciones en [CONTRIBUTING](../CONTRIBUTING.md), Dependabot para dependencias | Cumplido |
 | **+** Implementación | Laravel 13, PHP 8.3, MySQL 8 | `composer.json`, README | Cumplido |
-| **+** Interfaz | Sin sistemas externos; formularios Blade (ver [correcciones-plan.md](correcciones-plan.md)) | — | No aplica |
+| **+** Interfaz | Formularios Blade para la web y API REST JSON (`/api/v1`) para la app mobile | [api.md](api.md), colección de Bruno en [api/](api/) | Cumplido |
 | **+** Operaciones | Puesta en marcha y administración | Publicada en Render con la base en Aiven ([despliegue.md](despliegue.md)), despliegue automático cuando pasa el CI y verificación de `/up` después de cada merge; respaldos en [respaldos.md](respaldos.md). El plan gratis se apaga sin uso (RNF-08) | Cumplido, con la limitación del plan gratis |
 | **+** Empaquetamiento | Forma de distribución | `.zip` verificado en cada merge a `main` ([ci-cd.md](ci-cd.md)) | Cumplido |
 | **+** Legales | Licencia | [LICENSE](../LICENSE) (MIT, igual que `composer.json`) | Cumplido |
