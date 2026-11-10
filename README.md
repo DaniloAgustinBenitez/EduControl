@@ -81,6 +81,7 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 - [Calidad del software: FURPS+, SQA/SQC y registro de no conformidades](docs/calidad.md)
 - [Convenciones de trabajo: ramas, commits y PR](CONTRIBUTING.md)
 - [Correcciones a aplicar en el Plan de Trabajo](docs/correcciones-plan.md)
+- [Plan de trabajo de la app mobile (tutor y docente)](docs/plan-mobile.md) — el apartado de la app está en [mobile/](mobile/README.md)
 
 ## Estructura principal
 
@@ -96,6 +97,7 @@ database/
   seeders/              Roles, datos institucionales, usuarios de prueba y volumen
 resources/views/        Vistas Blade (layout con Bootstrap 5 + DataTables)
 tests/                  Tests unitarios y de integración
+mobile/                 App para celulares (Expo + React Native), en planificación: ver docs/plan-mobile.md
 ```
 
 ## Licencia
