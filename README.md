@@ -88,7 +88,7 @@ Requisitos: [Laragon](https://laragon.org) (trae PHP 8.3, MySQL 8 y Composer), G
 ## Estructura principal
 
 ```
-.github/                Pipeline de CI, Dependabot, CODEOWNERS y plantillas de PR e issues
+.github/                Pipeline de CI, CODEOWNERS y plantillas de PR e issues
 app/
   Http/Controllers/     ABM, autogestión, docente y reportes
   Http/Controllers/Api/ API REST de la app mobile (Sanctum) y Http/Resources/ con el JSON que devuelve

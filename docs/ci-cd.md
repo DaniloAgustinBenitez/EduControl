@@ -52,7 +52,7 @@ Commit → Build (npm ci) → Lint (ESLint) → Tipos (TypeScript) → Test (Jes
 
 Guarda el artefacto `cobertura-mobile-<commit>` (14 días) con el reporte `lcov` que usa SonarQube. El APK no se genera en el CI: se arma con EAS Build cuando hay que entregar (ver [plan-mobile.md](plan-mobile.md), tarea M6.2).
 
-Las dependencias de la app no las actualiza Dependabot: las versiones tienen que coincidir con el SDK de Expo, y se actualizan juntas con `npx expo install --fix` al cambiar de SDK.
+Las dependencias de la app se actualizan a mano: las versiones tienen que coincidir con el SDK de Expo, y se actualizan juntas con `npx expo install --fix` al cambiar de SDK.
 
 ## Artefactos
 
@@ -84,9 +84,9 @@ Si el CI falla en `main`, el job `notificar` abre un issue titulado `CI fallido 
 
 **Cómo demostrarlo:** *Actions → CI → Run workflow*, elegir la rama, tildar `simular_fallo` y ejecutar. El pipeline falla a propósito y aparece el issue. Después se cierra a mano.
 
-## Dependencias automáticas
+## Dependencias
 
-[`.github/dependabot.yml`](../.github/dependabot.yml) hace que Dependabot abra, una vez por semana, un PR con las actualizaciones menores de Composer agrupadas y otro para las acciones de GitHub. Cada uno pasa por el mismo CI: si queda en verde y el diff es razonable, se revisa y se mergea.
+Dependabot se sacó el 24/11: abría PR automáticos todas las semanas. Las dependencias de Composer y las acciones de GitHub se actualizan a mano, en un PR que pasa por el mismo CI. El paso **Seguridad** (`composer audit`) avisa si alguna tiene una vulnerabilidad publicada.
 
 ## Conectar el despliegue continuo (Render)
 

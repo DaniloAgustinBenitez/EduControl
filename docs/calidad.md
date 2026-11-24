@@ -10,7 +10,7 @@ Cómo el proyecto aplica el material de *Aseguramiento de la calidad del softwar
 | **U**sabilidad | Interfaz clara, errores en español, uso en celular (RNF-05, RNF-06) | Mensajes en `lang/es`, Bootstrap 5 responsive. Pruebas por rol y de diseño responsivo ejecutadas el 26/10: 53 de 53 pasos OK ([pruebas.md](pruebas.md)). Falta probar en Firefox y Safari | Cumplido, salvo multinavegador |
 | **R**eliability (fiabilidad) | Sin duplicados, respaldo y restauración (RNF-04, RNF-09) | Índices únicos en las inscripciones, `db:respaldar` y `db:restaurar` ([respaldos.md](respaldos.md)), CI en cada cambio | Cumplido |
 | **P**erformance | Reportes en menos de 3 segundos (RNF-07) | Medido con 3003 alumnos: el peor caso, 0,94 s ([pruebas.md](pruebas.md)) | Cumplido |
-| **S**oporte | Mantenible y configurable | Capas separadas (RNF-10), documentación en `docs/`, convenciones en [CONTRIBUTING](../CONTRIBUTING.md), Dependabot para dependencias | Cumplido |
+| **S**oporte | Mantenible y configurable | Capas separadas (RNF-10), documentación en `docs/`, convenciones en [CONTRIBUTING](../CONTRIBUTING.md), `composer audit` en el CI para las dependencias | Cumplido |
 | **+** Implementación | Laravel 13, PHP 8.3, MySQL 8 | `composer.json`, README | Cumplido |
 | **+** Interfaz | Formularios Blade para la web y API REST JSON (`/api/v1`) para la app mobile | [api.md](api.md), colección de Bruno en [api/](api/) | Cumplido |
 | **+** Operaciones | Puesta en marcha y administración | Publicada en Render con la base en Aiven ([despliegue.md](despliegue.md)), despliegue automático cuando pasa el CI y verificación de `/up` después de cada merge; respaldos en [respaldos.md](respaldos.md). El plan gratis se apaga sin uso (RNF-08) | Cumplido, con la limitación del plan gratis |
@@ -40,7 +40,7 @@ Una **no conformidad** es el incumplimiento de un estándar o proceso del proyec
 
 | Id | No conformidad | Dónde se detectó | Estado | Acción |
 |---|---|---|---|---|
-| NC-01 | Los PR #59, #60, #61, #64, #69, #70 y #71 se mergearon sin revisión cruzada (el #71, por decisión del equipo, para publicar el 27/10) | CONTRIBUTING, PR punto 4. `gh pr view`: 0 revisiones | **Abierta** | `CODEOWNERS` y checklist de revisor activos desde el #64. Los PR de Dependabot (#65, #66 y #67) esperan la revisión del otro integrante |
+| NC-01 | Los PR #59, #60, #61, #64, #69, #70 y #71 se mergearon sin revisión cruzada (el #71, por decisión del equipo, para publicar el 27/10) | CONTRIBUTING, PR punto 4. `gh pr view`: 0 revisiones | **Abierta** | `CODEOWNERS` y checklist de revisor activos desde el #64. Los PR de Dependabot que seguían abiertos se cerraron el 24/11 al sacar Dependabot |
 | NC-02 | Los PR se mergearon con *Merge commit*, no con *Squash and merge* (también el #64) | CONTRIBUTING, PR punto 5 | **Abierta** | En *Settings → General → Pull Requests* dejar habilitado solo *Squash merging* |
 | NC-03 | `main` sin protección de rama | Issue #3 | **Abierta** | Limitación del plan (GitHub pide Pro o repo público). Mitigación: CI, plantilla y `CODEOWNERS` |
 | NC-04 | `composer.lock` desfasado de `composer.json` desde el renombrado del 22/09 | Aviso en el log del CI del 22/10 que nadie atendió | Cerrada 24/10 | `composer update --lock` (sin cambiar versiones). Ahora `composer validate` frena el build si vuelve a pasar |
