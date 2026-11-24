@@ -51,7 +51,7 @@ Si algo incumple una regla de este documento (un PR mergeado sin revisión, un C
 
 ## Dependencias
 
-Dependabot abre PR semanales con las actualizaciones. Se tratan como cualquier otro PR: CI en verde, revisión del diff y *Squash and merge*.
+Las dependencias se actualizan a mano (Dependabot se sacó el 24/11 para no recibir PR automáticos). `composer audit` en el CI avisa si alguna tiene una vulnerabilidad publicada; en ese caso se actualiza en un PR como cualquier otro: CI en verde, revisión del diff y *Squash and merge*.
 
 ## Tablero
 

@@ -48,7 +48,7 @@ Se evaluaron cuatro mejoras posibles:
 
 ### Opción 1: seguridad y estado de las dependencias
 
-- **Qué se hizo:** el CI corre `composer validate` (que el lock coincida con `composer.json`) y `composer audit` (falla si una dependencia tiene una vulnerabilidad publicada). [Dependabot](../.github/dependabot.yml) abre cada lunes un PR con las actualizaciones menores agrupadas.
+- **Qué se hizo:** el CI corre `composer validate` (que el lock coincida con `composer.json`) y `composer audit` (falla si una dependencia tiene una vulnerabilidad publicada). Dependabot abría cada lunes un PR con las actualizaciones menores agrupadas.
 - **Por qué:** una dependencia vulnerable o un lock desfasado se descubrían tarde. De hecho, el log del CI ya mostraba un `composer.lock` desactualizado desde el renombrado del proyecto (NC-04), que se corrigió con esta mejora.
 - **Resultado:** `composer validate` y `composer audit` pasan en el CI de `main`. El 25/10 Dependabot abrió sus primeros 3 PR (Laravel 13.38, `actions/cache` v6 y `actions/upload-artifact` v7), los tres en verde.
 
